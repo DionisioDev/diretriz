@@ -1,0 +1,15 @@
+# Normaliza line endings: LF no repo, ferramentas locais decidem o resto.
+* text=auto eol=lf
+
+# Binários explícitos
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.woff binary
+*.woff2 binary
+*.glb binary
+*.gltf binary

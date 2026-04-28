@@ -1,0 +1,63 @@
+---
+import Base from '../layouts/Base.astro';
+
+const locale = 'pt' as const;
+---
+
+<Base
+  locale={locale}
+  path="/contato"
+  title="Contato — Diretriz Tecnologia"
+  description="Conte seu problema. Respondemos em até 1 dia útil."
+>
+  <section class="placeholder">
+    <p class="kicker mono">/ Contato</p>
+    <h1>Vamos construir juntos.</h1>
+    <p class="lead">O formulário interativo estará aqui na v1. Por enquanto, mande um e-mail direto:</p>
+    <a class="email" href="mailto:diretriztecnologia@gmail.com">
+      diretriztecnologia@gmail.com
+      <span aria-hidden="true">→</span>
+    </a>
+  </section>
+</Base>
+
+<style>
+  .placeholder {
+    max-width: var(--container-narrow);
+    margin: 0 auto;
+    padding: var(--space-4xl) var(--container-padding) var(--space-2xl);
+  }
+  .kicker {
+    font-size: var(--size-xs);
+    color: var(--color-accent);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin-bottom: var(--space-md);
+  }
+  h1 {
+    font-size: var(--size-3xl);
+    letter-spacing: var(--tracking-tighter);
+    margin-bottom: var(--space-md);
+  }
+  .lead {
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-xl);
+    max-width: 60ch;
+  }
+  .email {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    background: var(--gradient-brand);
+    color: var(--color-text);
+    border-radius: var(--radius-full);
+    font-weight: var(--weight-medium);
+    transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+  }
+  .email:hover {
+    color: var(--color-text);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+</style>

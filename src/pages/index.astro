@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/astro/Hero.astro';
+
+const locale = 'pt' as const;
+---
+
+<Base
+  locale={locale}
+  path="/"
+  title="Diretriz Tecnologia — Construímos. Rápido. Sob medida. Robusto."
+  description="Soluções em tecnologia sob medida: produtos digitais, automação de fluxos internos e camada de IA sobre seus sistemas. Entregas em semanas."
+>
+  <Hero locale={locale} />
+</Base>

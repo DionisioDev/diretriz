@@ -1,0 +1,45 @@
+/* ========================================================================
+   Global — ordem importa
+   1. Fontes (Geist via fontsource)
+   2. Tokens (custom properties)
+   3. Reset
+   4. Estilos base do <body>
+   ======================================================================== */
+
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+@import './tokens.css';
+@import './reset.css';
+
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+body {
+  font-size: var(--size-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  background:
+    var(--gradient-bg-glow),
+    var(--color-bg);
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'liga' 0, 'calt' 0;
+}
+
+a {
+  color: var(--color-text);
+  transition: color var(--motion-fast) var(--ease-out);
+}
+
+a:hover {
+  color: var(--color-primary-bright);
+}

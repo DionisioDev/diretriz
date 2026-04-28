@@ -1,0 +1,71 @@
+---
+import { t, type Locale } from '../../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="inner">
+    <p class="brand">
+      <span class="mono">Diretriz Tecnologia</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <a href="mailto:diretriztecnologia@gmail.com">diretriztecnologia@gmail.com</a>
+    </p>
+    <p class="meta">
+      © {year} Diretriz Tecnologia. {t('footer.rights', locale)}
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: var(--space-4xl);
+    padding: var(--space-2xl) 0;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-elevated);
+  }
+
+  .inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: var(--size-sm);
+    color: var(--color-text-muted);
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    color: var(--color-text);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .sep {
+    color: var(--color-text-dim);
+  }
+
+  .brand a:hover {
+    color: var(--color-primary-bright);
+  }
+
+  .meta {
+    font-size: var(--size-xs);
+    color: var(--color-text-dim);
+    font-family: var(--font-mono);
+  }
+</style>

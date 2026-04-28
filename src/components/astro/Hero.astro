@@ -1,0 +1,223 @@
+---
+import { t, type Locale } from '../../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+
+const words = t('hero.tagline', locale).split('. ').filter(Boolean);
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="bg" aria-hidden="true">
+    <div class="grid"></div>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+  </div>
+
+  <div class="content">
+    <p class="kicker mono">/ Diretriz Tecnologia</p>
+
+    <h1 id="hero-title" class="tagline">
+      {words.map((word, i) => (
+        <span class="word" style={`--i:${i}`}>
+          {word.replace('.', '')}<span class="dot">.</span>
+        </span>
+      ))}
+    </h1>
+
+    <p class="subtagline">{t('hero.subtagline', locale)}</p>
+
+    <div class="actions">
+      <a href={locale === 'pt' ? '/contato' : '/en/contact'} class="primary">
+        {t('cta.contact', locale)}
+        <span aria-hidden="true">→</span>
+      </a>
+      <a href={locale === 'pt' ? '/servicos' : '/en/services'} class="secondary">
+        {t('cta.discover', locale)}
+      </a>
+    </div>
+  </div>
+
+  <p class="scroll-hint mono" aria-hidden="true">scroll</p>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--space-4xl) var(--container-padding) var(--space-2xl);
+  }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  }
+
+  .glow {
+    position: absolute;
+    border-radius: var(--radius-full);
+    filter: blur(80px);
+    opacity: 0.45;
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+
+  .glow-1 {
+    width: 520px;
+    height: 520px;
+    background: var(--color-primary);
+    top: -120px;
+    left: -160px;
+  }
+
+  .glow-2 {
+    width: 420px;
+    height: 420px;
+    background: var(--color-accent);
+    bottom: -80px;
+    right: -120px;
+    animation-delay: -6s;
+  }
+
+  @keyframes drift {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(40px, -40px) scale(1.1); }
+  }
+
+  .content {
+    position: relative;
+    z-index: var(--z-content);
+    max-width: var(--container-max);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .kicker {
+    display: inline-block;
+    font-size: var(--size-xs);
+    color: var(--color-accent);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin-bottom: var(--space-lg);
+    opacity: 0;
+    animation: fade-up var(--motion-slower) var(--ease-out) 200ms forwards;
+  }
+
+  .tagline {
+    font-family: var(--font-display);
+    font-size: var(--size-display);
+    font-weight: var(--weight-bold);
+    letter-spacing: var(--tracking-tighter);
+    line-height: var(--leading-tight);
+    margin-bottom: var(--space-xl);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 0.4em;
+  }
+
+  .word {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fade-up var(--motion-slower) var(--ease-out) calc(400ms + var(--i) * 120ms) forwards;
+  }
+
+  .dot {
+    color: var(--color-primary-bright);
+  }
+
+  .word:nth-child(2) .dot { color: var(--color-accent); }
+  .word:nth-child(3) .dot { color: var(--color-primary); }
+  .word:nth-child(4) .dot { color: var(--color-primary-bright); }
+
+  .subtagline {
+    font-size: var(--size-md);
+    color: var(--color-text-muted);
+    max-width: 56ch;
+    margin-bottom: var(--space-2xl);
+    opacity: 0;
+    animation: fade-up var(--motion-slower) var(--ease-out) 1000ms forwards;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    opacity: 0;
+    animation: fade-up var(--motion-slower) var(--ease-out) 1200ms forwards;
+  }
+
+  .primary, .secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-full);
+    font-weight: var(--weight-medium);
+    font-size: var(--size-sm);
+    transition: all var(--motion-fast) var(--ease-out);
+  }
+
+  .primary {
+    background: var(--gradient-brand);
+    color: var(--color-text);
+  }
+
+  .primary:hover {
+    color: var(--color-text);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .secondary {
+    color: var(--color-text);
+    border: 1px solid var(--color-border-strong);
+  }
+
+  .secondary:hover {
+    color: var(--color-text);
+    border-color: var(--color-primary-bright);
+    background: rgba(59, 130, 246, 0.08);
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: var(--space-xl);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: var(--z-content);
+    font-size: var(--size-xs);
+    color: var(--color-text-dim);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fade-up var(--motion-slower) var(--ease-out) 1600ms forwards, bob 2.4s ease-in-out 1800ms infinite;
+  }
+
+  @keyframes fade-up {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translate(-50%, 0); }
+    50%      { transform: translate(-50%, 6px); }
+  }
+</style>

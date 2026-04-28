@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+
+const locale = 'pt' as const;
+---
+
+<Base
+  locale={locale}
+  path="/sobre"
+  title="Sobre — Diretriz Tecnologia"
+  description="Quem somos, como trabalhamos e por que entregamos rápido sem sacrificar a qualidade."
+>
+  <section class="placeholder">
+    <p class="kicker mono">/ Sobre</p>
+    <h1>Em construção.</h1>
+    <p class="lead">Esta página será publicada na v1 do site. Por enquanto, fale com a gente em <a href="mailto:diretriztecnologia@gmail.com">diretriztecnologia@gmail.com</a>.</p>
+  </section>
+</Base>
+
+<style>
+  .placeholder {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--space-4xl) var(--container-padding) var(--space-2xl);
+  }
+  .kicker {
+    font-size: var(--size-xs);
+    color: var(--color-accent);
+    letter-spacing: var(--tracking-widest);
+    text-transform: uppercase;
+    margin-bottom: var(--space-md);
+  }
+  h1 {
+    font-size: var(--size-2xl);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-md);
+  }
+  .lead {
+    color: var(--color-text-muted);
+    max-width: 60ch;
+  }
+  .lead a:hover {
+    color: var(--color-primary-bright);
+  }
+</style>
