@@ -170,20 +170,25 @@ Ferramenta: **Cloudflare Web Analytics** (sem cookie, sem banner LGPD, suficient
 ### Logo
 Avião de papel estilizado em azul forte + cinza-azulado, wordmark "Diretriz" em azul-marinho com "tecnologia" em azul vibrante embaixo. Transmite **direção, movimento, precisão**.
 
-### Paleta (extraída do logo + referências)
+### Paleta (light theme — definida no design Claude Design v3)
 
-| Token | Hex aproximado | Uso |
+| Token | Hex | Uso |
 |---|---|---|
-| `--color-bg` | `#0A1628` | Background principal (dark) |
-| `--color-bg-elevated` | `#0F1E36` | Cards, surfaces |
-| `--color-primary` | `#1D4ED8` | Acentos, CTAs, links |
-| `--color-primary-bright` | `#3B82F6` | Hover, glow, gradientes |
-| `--color-accent` | `#22D3EE` | Detalhes, IA, "vivacidade" |
-| `--color-neutral` | `#64748B` | Texto secundário, separadores |
-| `--color-text` | `#F1F5F9` | Texto principal sobre dark |
-| `--color-text-muted` | `#94A3B8` | Texto auxiliar |
+| `--color-bg` | `#FAFBFD` | Background principal (light) |
+| `--color-bg-elevated` | `#FFFFFF` | Cards, surfaces brancas |
+| `--color-bg-tint` | `#F1F5FB` | Seções alternadas (`section-tint`) |
+| `--color-bg-deep` | `#EAF1FB` | Fundos azulados sutis |
+| `--color-primary` | `#2563EB` | CTAs, links, acentos principais |
+| `--color-primary-bright` | `#3B82F6` | Hover do primário |
+| `--color-primary-soft` | `#60A5FA` | Bordas hover de cards |
+| `--color-primary-pale` | `#DBEAFE` | Bordas suaves, badges |
+| `--color-accent` | `#0EA5E9` | Detalhes ciano (uso pontual) |
+| `--color-text` | `#0B1220` | Texto principal sobre light |
+| `--color-text-muted` | `#4B5468` | Texto secundário |
+| `--color-text-dim` | `#8A93A6` | Texto auxiliar, kickers |
+| `--color-text-faint` | `#B5BCCB` | Texto desabilitado |
 
-> Cores definitivas serão validadas no protótipo. Estes são pontos de partida derivados do logo.
+> Decisão de virada para **light theme** ocorreu durante iteração de design (28/04/2026). Brief original previa dark; cliente preferiu light após ver mockups intermediários.
 
 ### Tipografia (definida)
 - **Display + Body**: **Geist Sans** (família unificada da Vercel, free)

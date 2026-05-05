@@ -1,0 +1,13 @@
+.caret {
+  display: inline-block;
+  width: 0.06em;
+  margin-left: 0.04em;
+  color: var(--color-primary);
+  animation: caretBlink 0.9s steps(1) infinite;
+  font-weight: 300;
+}
+
+@keyframes caretBlink {
+  0%, 50%   { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}

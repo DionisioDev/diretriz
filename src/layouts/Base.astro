@@ -44,20 +44,60 @@ const seo = buildSeo({ title, description, locale, path, ogImage } satisfies Seo
     <meta name="twitter:description" content={seo.description} />
     <meta name="twitter:image" content={seo.ogImage} />
 
-    <meta name="theme-color" content="#0a1628" />
+    <meta name="theme-color" content="#FFFFFF" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <script type="application/ld+json" set:html={JSON.stringify(organizationJsonLd())} />
-
-    <!-- Cloudflare Web Analytics: token será injetado via dashboard do Cloudflare Pages -->
   </head>
   <body>
     <a href="#main" class="skip-link">Pular para o conteúdo</a>
+
     <Header locale={locale} />
     <main id="main">
       <slot />
     </main>
     <Footer locale={locale} />
+
+    <script>
+      // Reveal-on-scroll: usa scroll + getBoundingClientRect (mais robusto que IntersectionObserver
+      // em alguns contextos de iframe/embed). Adiciona .in quando o elemento entra a 92% do viewport.
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion) {
+        document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+      } else {
+        const check = () => {
+          const vh = window.innerHeight || document.documentElement.clientHeight;
+          const trigger = vh * 0.92;
+          const els = document.querySelectorAll('.reveal:not(.in)');
+          els.forEach((el) => {
+            const r = el.getBoundingClientRect();
+            if (r.top < trigger && r.bottom > 0) {
+              el.classList.add('in');
+            }
+          });
+        };
+
+        let raf = 0;
+        const onScroll = () => {
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            check();
+          });
+        };
+
+        check();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll);
+        document.body.addEventListener('scroll', onScroll, { passive: true });
+
+        // Re-check após montagens atrasadas (preloader, typewriter, ilhas React)
+        setTimeout(check, 400);
+        setTimeout(check, 1500);
+        setTimeout(check, 3000);
+      }
+    </script>
   </body>
 </html>
 
@@ -69,12 +109,11 @@ const seo = buildSeo({ title, description, locale, path, ogImage } satisfies Seo
     z-index: var(--z-toast);
     padding: var(--space-sm) var(--space-md);
     background: var(--color-primary);
-    color: var(--color-text);
+    color: #fff;
     border-radius: var(--radius-md);
     font-weight: var(--weight-medium);
-    transition: top var(--motion-fast) var(--ease-out);
+    transition: top var(--motion-fast) var(--ease);
   }
-
   .skip-link:focus-visible {
     top: var(--space-md);
   }

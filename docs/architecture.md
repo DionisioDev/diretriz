@@ -25,9 +25,9 @@ Princípios norteadores:
 |---|---|---|---|
 | Framework | **Astro** | 5.x | SSG nativo, islands para React, i18n embutido, ótimo SEO |
 | UI | **React** | 19.x | Apenas em ilhas interativas (3D, form, chat futuro) |
-| 3D / WebGL | **React Three Fiber** + **drei** | R3F 9.x / drei 10.x | Three.js declarativo, ecossistema maduro |
-| Animação 2D | **Motion** (ex-Framer Motion) | 12.x | Componentes de transição, gestos |
-| Scroll | **GSAP** + **ScrollTrigger** | 3.x | Padrão para scroll-driven complexo |
+| Hero animado | **Canvas 2D** (HTMLCanvasElement nativo) | — | v1 usa avião de papel + 320 partículas em curvas Bezier; sem WebGL/R3F nesta fase |
+| 3D / WebGL (futuro) | **React Three Fiber** + **drei** | R3F 9.x / drei 10.x | Reservado para v2 quando precisar de cena 3D real |
+| Animação 2D | CSS animations + `IntersectionObserver` | nativo | Reveal-on-scroll, transições suaves; sem dependência runtime extra |
 | Estilo | **CSS Modules** + custom properties | nativo | Legível, escopado, zero runtime |
 | TypeScript | — | 5.x | Em todo o código de aplicação |
 | Build | **Vite** (sob Astro) | — | Já vem com Astro |

@@ -1,0 +1,231 @@
+---
+import { getContent, type Locale } from '../../lib/i18n';
+import OutroPlane from '../react/OutroPlane/OutroPlane';
+import ContactForm from '../react/ContactForm/ContactForm';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const c = getContent(locale);
+---
+
+<section class="outro section-dark" id="contato" data-screen-label="06 Contato">
+  <div class="outro__plane-bg" aria-hidden="true">
+    <OutroPlane client:visible />
+  </div>
+
+  <div class="container outro__inner">
+    <div class="outro__head">
+      <div class="section-label reveal reveal-fade">{c.outro.label}</div>
+      <h2 class="outro__title reveal reveal-clip reveal-d1">
+        {c.outro.titleStart}<span class="blue">{c.outro.titleAccent}</span>{c.outro.titleEnd}
+      </h2>
+      <p class="outro__lede reveal reveal-up reveal-d2">{c.outro.lede}</p>
+    </div>
+
+    <div class="outro__grid">
+      <aside class="outro__info reveal reveal-up reveal-d2">
+        {c.outro.info.map((row) => (
+          <div class="outro__info-row">
+            <div class="outro__info-label">{row.label}</div>
+            {row.href ? (
+              <a class="outro__info-value" href={row.href}>
+                {row.pulse && <span class="outro__pulse" />}
+                {row.value}
+              </a>
+            ) : (
+              <div class="outro__info-value">
+                {row.pulse && <span class="outro__pulse" />}
+                {row.value}
+              </div>
+            )}
+          </div>
+        ))}
+
+        <div class="outro__social">
+          {c.outro.socials.map((s) => (
+            <a href={s.href} aria-label={s.label} class="outro__social-link">
+              {s.label === 'LinkedIn' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M4 4h4v4H4zM4 10h4v10H4zM10 10h4v2c.6-1.4 2.2-2.4 4-2.4 3 0 4 2 4 5V20h-4v-5c0-1.5-.5-2.5-2-2.5s-2 1-2 2.5V20h-4z" />
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
+                </svg>
+              )}
+              {s.label}
+            </a>
+          ))}
+        </div>
+      </aside>
+
+      <div class="outro__form-wrap reveal reveal-up reveal-d3">
+        <ContactForm client:visible strings={c.outro.form} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .outro {
+    position: relative;
+    padding-top: clamp(80px, 10vw, 140px);
+    padding-bottom: clamp(80px, 10vw, 140px);
+    overflow: hidden;
+  }
+
+  .outro__plane-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+  .outro__plane-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 10%, rgba(37, 99, 235, 0.45), transparent 55%),
+      radial-gradient(ellipse at 10% 90%, rgba(96, 165, 250, 0.30), transparent 60%);
+  }
+  .outro__plane-bg > :global(canvas) {
+    position: absolute;
+    right: -8%;
+    bottom: -10%;
+    width: 480px !important;
+    height: 480px !important;
+    opacity: 0.18;
+    filter: blur(0.5px);
+  }
+
+  .outro__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .outro__head {
+    max-width: 760px;
+    margin-bottom: clamp(48px, 6vw, 80px);
+  }
+
+  .outro__title {
+    font-size: clamp(2rem, 1rem + 3.2vw, 3.5rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin: 16px 0 24px 0;
+    text-wrap: balance;
+  }
+  .outro__title :global(.blue) {
+    color: #60A5FA;
+  }
+
+  .outro__lede {
+    font-size: 1.0625rem;
+    color: rgba(229, 235, 245, 0.72);
+    max-width: 56ch;
+    line-height: 1.55;
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  .outro__grid {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: clamp(32px, 5vw, 72px);
+    align-items: start;
+  }
+
+  .outro__info {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+    border-radius: var(--radius-2xl);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-border-on-dark);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .outro__info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .outro__info-row:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .outro__info-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(229, 235, 245, 0.5);
+  }
+
+  .outro__info-value {
+    font-size: 0.9375rem;
+    color: #E5EBF5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  a.outro__info-value:hover {
+    color: #60A5FA;
+  }
+
+  .outro__pulse {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #34D399;
+    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+    animation: outro-pulse 2s ease-out infinite;
+  }
+  @keyframes outro-pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
+    70%  { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+  }
+
+  .outro__social {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .outro__social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.875rem;
+    color: rgba(229, 235, 245, 0.85);
+    transition: all 0.2s var(--ease);
+  }
+  .outro__social-link:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+  }
+
+  @media (max-width: 880px) {
+    .outro__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

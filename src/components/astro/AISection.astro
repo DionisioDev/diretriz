@@ -1,0 +1,107 @@
+---
+import { getContent, getSectionAnchor, type Locale } from '../../lib/i18n';
+import AICanvas from '../react/AICanvas/AICanvas';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const c = getContent(locale);
+const contactHref = getSectionAnchor('contato', locale);
+---
+
+<section class="section-pad section-deep" id="ai" data-screen-label="04 IA">
+  <div class="container">
+    <div class="ai__head">
+      <div>
+        <div class="section-label reveal reveal-fade">{c.ai.label}</div>
+        <h2 class="ai__title reveal reveal-up reveal-d1">
+          {c.ai.titleStart}<span class="blue">{c.ai.titleAccent}</span>{c.ai.titleEnd}
+        </h2>
+        <p class="ai__copy reveal reveal-up reveal-d2">{c.ai.copy}</p>
+        <a href={contactHref} class="ai__cta reveal reveal-up reveal-d3">
+          {c.ai.cta}
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M3 7 L11 7 M7 3 L11 7 L7 11" stroke="currentColor" stroke-width="1.5" fill="none" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="ai__viz reveal reveal-scale reveal-d2">
+        <AICanvas
+          client:visible
+          systems={c.ai.systems}
+          layerLabel={c.ai.layerLabel}
+          statusLabel={c.ai.statusLabel}
+        />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ai__head {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+
+  .ai__title {
+    font-size: var(--fs-h2);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin: 0 0 24px 0;
+    text-wrap: balance;
+  }
+  .ai__title .blue {
+    color: var(--color-primary);
+  }
+
+  .ai__copy {
+    color: var(--color-text-muted);
+    margin: 0 0 28px 0;
+    max-width: 52ch;
+    text-wrap: pretty;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+  }
+
+  .ai__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--fs-small);
+    color: var(--color-primary);
+    font-weight: 500;
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 4px;
+    transition: gap 0.3s var(--ease);
+  }
+  .ai__cta:hover {
+    color: var(--color-primary);
+    gap: 16px;
+  }
+
+  .ai__viz {
+    position: relative;
+    border-radius: var(--radius-2xl);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.3));
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    padding: 24px;
+    box-shadow:
+      0 24px 60px -20px rgba(37, 99, 235, 0.25),
+      0 1px 0 rgba(255, 255, 255, 0.6) inset;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  @media (max-width: 880px) {
+    .ai__head {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>

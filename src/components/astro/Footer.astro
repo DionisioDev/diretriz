@@ -1,71 +1,128 @@
 ---
-import { t, type Locale } from '../../lib/i18n';
+import BrandMark from './BrandMark.astro';
+import { getContent, type Locale } from '../../lib/i18n';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props as Props;
+const c = getContent(locale);
 const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <div class="inner">
-    <p class="brand">
-      <span class="mono">Diretriz Tecnologia</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <a href="mailto:diretriztecnologia@gmail.com">diretriztecnologia@gmail.com</a>
-    </p>
-    <p class="meta">
-      © {year} Diretriz Tecnologia. {t('footer.rights', locale)}
-    </p>
+  <div class="container">
+    <div class="footer__top">
+      <div class="footer__brand-col">
+        <a href={locale === 'pt' ? '/' : '/en/'} class="footer__brand" aria-label="Diretriz Tecnologia">
+          <BrandMark />
+          Diretriz <small>tecnologia</small>
+        </a>
+        <p>{c.footer.tagline}</p>
+      </div>
+
+      {c.footer.cols.map((col) => (
+        <div class="footer__col">
+          <h4>{col.title}</h4>
+          <ul>
+            {col.links.map((l) => (
+              <li><a href={l.href}>{l.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {year} Diretriz Tecnologia. {c.footer.rights}</span>
+      <span>{c.footer.privacy}</span>
+    </div>
   </div>
 </footer>
 
 <style>
   .footer {
-    margin-top: var(--space-4xl);
-    padding: var(--space-2xl) 0;
+    padding: 48px 0 28px;
     border-top: 1px solid var(--color-border);
-    background: var(--color-bg-elevated);
+    background: var(--color-bg);
   }
 
-  .inner {
-    max-width: var(--container-max);
-    margin: 0 auto;
-    padding: 0 var(--container-padding);
+  .footer__top {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 32px;
+    align-items: start;
+  }
+
+  .footer__brand-col {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-md);
+    flex-direction: column;
+    gap: 12px;
+  }
+  .footer__brand-col p {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+    margin: 0;
+    max-width: 28ch;
   }
 
-  .brand {
+  .footer__brand {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-sm);
-    font-size: var(--size-sm);
-    color: var(--color-text-muted);
-  }
-
-  .mono {
-    font-family: var(--font-mono);
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: 600;
     color: var(--color-text);
-    letter-spacing: var(--tracking-tight);
+    letter-spacing: -0.015em;
+  }
+  .footer__brand small {
+    font-size: 0.7rem;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-left: 2px;
   }
 
-  .sep {
-    color: var(--color-text-dim);
-  }
-
-  .brand a:hover {
-    color: var(--color-primary-bright);
-  }
-
-  .meta {
-    font-size: var(--size-xs);
-    color: var(--color-text-dim);
+  .footer__col h4 {
+    margin: 0 0 14px 0;
     font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--color-text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .footer__col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .footer__col a {
+    color: var(--color-text-muted);
+    font-size: var(--fs-small);
+    transition: color 0.3s;
+  }
+  .footer__col a:hover {
+    color: var(--color-primary);
+  }
+
+  .footer__bottom {
+    border-top: 1px solid var(--color-border);
+    padding-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: var(--fs-xs);
+    color: var(--color-text-dim);
+  }
+
+  @media (max-width: 880px) {
+    .footer__top {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 </style>

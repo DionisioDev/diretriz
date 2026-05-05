@@ -1,5 +1,5 @@
 /* ========================================================================
-   Reset moderno — baseado em Andy Bell + ajustes para SPA dark
+   Reset moderno — minimalista, alinhado ao tema light
    ======================================================================== */
 
 *, *::before, *::after {
@@ -33,7 +33,7 @@ html {
 body {
   min-height: 100vh;
   min-height: 100dvh;
-  line-height: var(--leading-normal);
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -51,8 +51,10 @@ input, button, textarea, select {
 
 button {
   background: none;
-  border: none;
+  border: 0;
   cursor: pointer;
+  padding: 0;
+  color: inherit;
 }
 
 p, h1, h2, h3, h4, h5, h6 {
@@ -77,12 +79,17 @@ ul[role="list"], ol[role="list"] {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-primary-bright);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+  border-radius: 2px;
 }
 
 ::selection {
   background: var(--color-primary);
-  color: var(--color-text);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }

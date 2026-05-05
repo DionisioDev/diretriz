@@ -1,6 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Hero from '../../components/astro/Hero.astro';
+import Manifesto from '../../components/astro/Manifesto.astro';
+import Pillars from '../../components/astro/Pillars.astro';
+import AISection from '../../components/astro/AISection.astro';
+import Process from '../../components/astro/Process.astro';
+import Outro from '../../components/astro/Outro.astro';
 
 const locale = 'en' as const;
 ---
@@ -9,7 +14,12 @@ const locale = 'en' as const;
   locale={locale}
   path="/en/"
   title="Diretriz Tecnologia — We build. Fast. Tailored. Solid."
-  description="Custom technology solutions: digital products, internal workflow automation and AI layers over your existing systems. Delivered in weeks."
+  description="Custom technology solutions. Digital products, workflow automation, and AI layers applied over what your company already has."
 >
   <Hero locale={locale} />
+  <Manifesto locale={locale} />
+  <Pillars locale={locale} />
+  <AISection locale={locale} />
+  <Process locale={locale} />
+  <Outro locale={locale} />
 </Base>

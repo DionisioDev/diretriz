@@ -1,0 +1,43 @@
+---
+import { getContent, type Locale } from '../../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const c = getContent(locale);
+---
+
+<section class="section-pad manifesto" id="sobre" data-screen-label="02 Manifesto">
+  <div class="container">
+    <div class="section-label center reveal reveal-fade">{c.manifesto.label}</div>
+    <p class="manifesto__text">
+      <span class="reveal reveal-clip">{c.manifesto.lineA}</span>
+      <br />
+      <span class="blue reveal reveal-clip reveal-d1">{c.manifesto.lineB}</span>
+    </p>
+  </div>
+</section>
+
+<style>
+  .manifesto {
+    text-align: center;
+  }
+  .manifesto :global(.section-label) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .manifesto__text {
+    font-size: clamp(1.75rem, 1rem + 3vw, 3.75rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.035em;
+    max-width: 22ch;
+    margin: 0 auto;
+    text-wrap: balance;
+  }
+  .manifesto__text :global(.blue) {
+    color: var(--color-primary);
+  }
+</style>

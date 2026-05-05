@@ -1,6 +1,11 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/astro/Hero.astro';
+import Manifesto from '../components/astro/Manifesto.astro';
+import Pillars from '../components/astro/Pillars.astro';
+import AISection from '../components/astro/AISection.astro';
+import Process from '../components/astro/Process.astro';
+import Outro from '../components/astro/Outro.astro';
 
 const locale = 'pt' as const;
 ---
@@ -9,7 +14,12 @@ const locale = 'pt' as const;
   locale={locale}
   path="/"
   title="Diretriz Tecnologia — Construímos. Rápido. Sob medida. Robusto."
-  description="Soluções em tecnologia sob medida: produtos digitais, automação de fluxos internos e camada de IA sobre seus sistemas. Entregas em semanas."
+  description="Soluções em tecnologia sob medida. Produtos digitais, automação de fluxos e camadas de IA aplicadas sobre o que sua empresa já tem."
 >
   <Hero locale={locale} />
+  <Manifesto locale={locale} />
+  <Pillars locale={locale} />
+  <AISection locale={locale} />
+  <Process locale={locale} />
+  <Outro locale={locale} />
 </Base>

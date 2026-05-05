@@ -1,7 +1,9 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { getContent } from '../../lib/i18n';
 
 const locale = 'en' as const;
+const c = getContent(locale);
 ---
 
 <Base
@@ -10,22 +12,25 @@ const locale = 'en' as const;
   title="Contact — Diretriz Tecnologia"
   description="Tell us your problem. We respond within 1 business day."
 >
-  <section class="placeholder">
-    <p class="kicker mono">/ Contact</p>
-    <h1>Let's build together.</h1>
-    <p class="lead">The interactive form lands in v1. For now, drop us a line:</p>
-    <a class="email" href="mailto:diretriztecnologia@gmail.com">
-      diretriztecnologia@gmail.com
-      <span aria-hidden="true">→</span>
-    </a>
+  <section class="stub section-pad">
+    <div class="container">
+      <div class="section-label">{c.nav.contact}</div>
+      <h1 class="stub__title">Let's build together.</h1>
+      <p class="stub__lead">
+        The interactive form ships in a future iteration. For now, drop us a line:
+      </p>
+      <a class="btn btn--primary" href="mailto:diretriztecnologia@gmail.com">
+        diretriztecnologia@gmail.com
+        <svg class="btn-arrow" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M2 12 L12 2 M5 2 L12 2 L12 9" stroke="currentColor" stroke-width="1.5" fill="none" />
+        </svg>
+      </a>
+    </div>
   </section>
 </Base>
 
 <style>
-  .placeholder { max-width: var(--container-narrow); margin: 0 auto; padding: var(--space-4xl) var(--container-padding) var(--space-2xl); }
-  .kicker { font-size: var(--size-xs); color: var(--color-accent); letter-spacing: var(--tracking-widest); text-transform: uppercase; margin-bottom: var(--space-md); }
-  h1 { font-size: var(--size-3xl); letter-spacing: var(--tracking-tighter); margin-bottom: var(--space-md); }
-  .lead { color: var(--color-text-muted); margin-bottom: var(--space-xl); max-width: 60ch; }
-  .email { display: inline-flex; align-items: center; gap: var(--space-sm); padding: var(--space-md) var(--space-lg); background: var(--gradient-brand); color: var(--color-text); border-radius: var(--radius-full); font-weight: var(--weight-medium); transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out); }
-  .email:hover { color: var(--color-text); transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+  .stub { padding-top: clamp(140px, 16vw, 220px); }
+  .stub__title { font-size: clamp(2rem, 1rem + 3vw, 3.5rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.05; margin: 0 0 24px 0; max-width: 22ch; text-wrap: balance; }
+  .stub__lead { color: var(--color-text-muted); max-width: 56ch; font-size: 1.0625rem; margin-bottom: 32px; }
 </style>

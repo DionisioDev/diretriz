@@ -1,0 +1,121 @@
+---
+import { getContent, type Locale } from '../../lib/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props as Props;
+const c = getContent(locale);
+---
+
+<section class="section-pad" id="processo" data-screen-label="05 Processo">
+  <div class="container">
+    <div class="process__head">
+      <div class="section-label reveal reveal-fade">{c.process.label}</div>
+      <h2 class="process__title reveal reveal-up reveal-d1">
+        {c.process.titleStart}<span class="blue">{c.process.titleAccent}</span>
+      </h2>
+    </div>
+
+    <div class="process__steps">
+      {c.process.steps.map((s, i) => (
+        <div class:list={['process__step', 'reveal', 'reveal-stagger', `reveal-d${i + 1}`]}>
+          <div class="process__step-num">{s.n}</div>
+          <h3 class="process__step-title">{s.title}</h3>
+          <p class="process__step-desc">{s.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .process__head {
+    margin-bottom: 56px;
+  }
+  .process__title {
+    font-size: var(--fs-h2);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+    margin: 0;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .process__title .blue {
+    color: var(--color-primary);
+  }
+
+  .process__steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    position: relative;
+  }
+  .process__step {
+    display: grid;
+    gap: 12px;
+    position: relative;
+    padding-top: 40px;
+  }
+  .process__step::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18);
+  }
+  .process__step::after {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: 14px;
+    right: 16px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-primary-soft) 0%, transparent 100%);
+  }
+  .process__step:last-child::after {
+    display: none;
+  }
+  .process__step-num {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-primary);
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+  .process__step-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0;
+    color: var(--color-text);
+  }
+  .process__step-desc {
+    font-size: var(--fs-small);
+    color: var(--color-text-muted);
+    margin: 0;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  @media (max-width: 980px) {
+    .process__steps {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .process__step::after {
+      display: none;
+    }
+  }
+  @media (max-width: 600px) {
+    .process__steps {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
