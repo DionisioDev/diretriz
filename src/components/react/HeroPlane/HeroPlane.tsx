@@ -18,7 +18,7 @@ interface Props {
  *
  * Sequência:
  * 1) Avião voa de fora-esquerda em arco Bezier até a posição final (1.7s, easeOutQuint)
- * 2) Trail de 26 sombras coladas na curva enquanto voa
+ * 2) Trail de 48 sombras coladas na curva enquanto voa
  * 3) Pouso → idle float gentil + estela de partículas ambientes (520) com fade-in (700ms)
  *
  * Usa o sprite real da logo (public/assets/plane-logo.png).
@@ -161,8 +161,9 @@ export default function HeroPlane({ onLanded }: Props) {
 
       if (flightT < 1) {
         // Trail durante voo: sombras amostrando a curva em tempos anteriores
-        for (let i = 1; i <= 26; i++) {
-          const trailT = i / 26;
+        const TRAIL_COUNT = 48;
+        for (let i = 1; i <= TRAIL_COUNT; i++) {
+          const trailT = i / TRAIL_COUNT;
           const sampleEased = Math.max(0, easedT - trailT * 0.22);
           const tx = bezX(sampleEased, start, control, final);
           const ty = bezY(sampleEased, start, control, final);
