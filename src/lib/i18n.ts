@@ -30,7 +30,15 @@ export interface PillarItem {
   num: string;
   title: string;
   desc: string;
+  bullets: string[];
+  cta: string;
   featured?: boolean;
+}
+
+export interface PillarsBanner {
+  title: string;
+  desc: string;
+  cta: string;
 }
 
 export interface ProcessStep {
@@ -78,6 +86,7 @@ export interface SiteContent {
     titleEnd: string;
     intro: string;
     items: PillarItem[];
+    banner: PillarsBanner;
   };
   ai: {
     label: string;
@@ -120,11 +129,6 @@ export interface SiteContent {
     rights: string;
     privacy: string;
   };
-  stub: {
-    label: string;
-    title: string;
-    leadBefore: string;
-  };
   langSwitch: { label: string };
   preloader: { brand: string };
 }
@@ -146,70 +150,88 @@ const content: Record<Locale, SiteContent> = {
       ctaSecondary: 'Conhecer mais',
     },
     manifesto: {
-      label: 'Nosso Manifesto',
-      lineA: 'Não substituímos o que você já tem.',
-      lineB: 'Amplificamos com tecnologia.',
+      label: 'Nosso processo',
+      lineA: 'Escutamos o problema antes de escrever uma linha de código.',
+      lineB: 'Então construímos rápido, moderno e na diretriz do seu negócio.',
     },
     pillars: {
       label: 'Serviços',
-      titleStart: 'Quatro frentes. ',
-      titleAccent: 'Uma forma',
-      titleEnd: ' de trabalhar.',
+      titleStart: 'Três frentes. ',
+      titleAccent: 'Uma forma de entregar resultados',
+      titleEnd: '.',
       intro:
         'Sem pacote pronto, sem template. Cada projeto começa entendendo o problema antes de qualquer linha de código.',
       items: [
         {
           num: '01',
           title: 'Produtos sob medida',
-          desc: 'Desenvolvemos produtos digitais do zero, com foco no que realmente importa para o seu negócio.',
-        },
-        {
-          num: '02',
-          title: 'Automação de fluxos',
-          desc: 'Automatizamos processos internos sem trocar os sistemas que você já usa no dia a dia.',
-        },
-        {
-          num: '03',
-          title: 'IA sobre legado',
-          desc: 'Adicionamos uma camada de inteligência artificial sobre seu sistema atual e multiplicamos o valor do que você já tem.',
+          desc: 'Construímos produtos digitais do zero — modernos, do seu tamanho, modelados para resolver o seu problema, não o do mercado.',
+          bullets: [
+            'Soluções escaláveis e modernas',
+            'Tecnologias atuais e bem testadas',
+            'Foco em performance e experiência',
+          ],
+          cta: 'Saiba como funciona',
           featured: true,
         },
         {
-          num: '04',
+          num: '02',
+          title: 'Automação',
+          desc: 'Workflows novos que tiram seu time do operacional repetitivo e devolvem horas para o que importa.',
+          bullets: [
+            'Workflows inteligentes',
+            'Integração com suas ferramentas',
+            'Menos tarefas manuais, mais eficiência',
+          ],
+          cta: 'Ver possibilidades',
+        },
+        {
+          num: '03',
           title: 'Consultoria técnica',
-          desc: 'Apoio estratégico e técnico para decisões de arquitetura, escolha de stack e crescimento do produto.',
+          desc: 'Discovery, arquitetura e segunda opinião para quem tem time interno e precisa de validação externa.',
+          bullets: [
+            'Discovery e análise de viabilidade',
+            'Arquitetura e boas práticas',
+            'Code review e mentoria técnica',
+          ],
+          cta: 'Falar com um especialista',
         },
       ],
+      banner: {
+        title: 'Não sabe por onde começar?',
+        desc: 'Vamos conversar sobre o seu desafio.',
+        cta: 'Agendar uma conversa',
+      },
     },
     ai: {
-      label: 'Nosso Diferencial',
-      titleStart: 'IA sobre o que ',
-      titleAccent: 'já existe',
+      label: 'Frente em desenvolvimento',
+      titleStart: 'IA está no nosso ',
+      titleAccent: 'radar',
       titleEnd: '.',
       copy:
-        'Conectamos nossa camada de IA aos seus sistemas atuais e liberamos novas possibilidades com inteligência, sem ruptura, sem começar do zero.',
-      cta: 'Saiba como funciona',
-      layerLabel: 'CAMADA DE IA',
-      statusLabel: 'online',
-      systems: ['ERP', 'CRM', 'Planilhas', 'Sistemas', 'Outros'],
+        'Estamos explorando como a inteligência artificial pode entrar nos produtos que construímos — sem promessa de roadmap, sem buzzword. Quando fizer sentido para o problema, fizer sentido para o time.',
+      cta: 'Conversar sobre IA',
+      layerLabel: 'EM EXPLORAÇÃO',
+      statusLabel: 'explorando',
+      systems: ['Atendimento', 'Análise', 'Operações', 'Documentos', 'Decisão'],
     },
     process: {
       label: 'Como trabalhamos',
       titleStart: 'Cinco passos. ',
       titleAccent: 'Sem mistério.',
       steps: [
-        { n: '01', title: 'Entendemos', desc: 'Mergulhamos no seu negócio e no problema de verdade.' },
-        { n: '02', title: 'Planejamos', desc: 'Desenhamos a solução sob medida com foco em resultados rápidos.' },
-        { n: '03', title: 'Construímos', desc: 'Desenvolvemos com qualidade, testes e transparência total.' },
-        { n: '04', title: 'Entregamos', desc: 'Colocamos em produção de forma segura e acompanhada.' },
-        { n: '05', title: 'Evoluímos', desc: 'Iteramos e aprimoramos sempre junto com seu time.' },
+        { n: '01', title: 'Entendemos', desc: 'Discovery primeiro. Não escrevemos código antes de mapear o problema de verdade.' },
+        { n: '02', title: 'Planejamos', desc: 'Você vê escopo, marcos e o porquê de cada decisão. Sem caixa-preta.' },
+        { n: '03', title: 'Construímos', desc: 'Stack moderna, código limpo, escolhas explicáveis.' },
+        { n: '04', title: 'Entregamos', desc: 'Em produção, acompanhado — não te deixamos sozinho na hora do uso.' },
+        { n: '05', title: 'Evoluímos', desc: 'Iteração contínua junto com seu time, não para ele.' },
       ],
     },
     outro: {
       label: '/ Contato',
       titleStart: 'Vamos construir o ',
       titleAccent: 'próximo passo',
-      titleEnd: ' do seu negócio.',
+      titleEnd: ' do seu produto.',
       lede:
         'Conta o que está te tirando o sono. A gente responde em até 1 dia útil com uma conversa, não com um orçamento.',
       info: [
@@ -278,11 +300,6 @@ const content: Record<Locale, SiteContent> = {
       rights: 'Todos os direitos reservados.',
       privacy: 'Política de Privacidade',
     },
-    stub: {
-      label: 'Em breve',
-      title: 'Esta página está em construção.',
-      leadBefore: 'Por enquanto, fale com a gente em',
-    },
     langSwitch: { label: 'Idioma' },
     preloader: { brand: 'Diretriz' },
   },
@@ -308,34 +325,52 @@ const content: Record<Locale, SiteContent> = {
     },
     pillars: {
       label: 'Services',
-      titleStart: 'Four fronts. ',
-      titleAccent: 'One way',
-      titleEnd: ' of working.',
+      titleStart: 'Three fronts. ',
+      titleAccent: 'One way of delivering results',
+      titleEnd: '.',
       intro:
         'No prepackaged solutions, no templates. Every project starts by understanding the problem before any line of code.',
       items: [
         {
           num: '01',
           title: 'Custom products',
-          desc: 'We build digital products from scratch, focused on what truly matters for your business.',
-        },
-        {
-          num: '02',
-          title: 'Workflow automation',
-          desc: 'We automate internal processes without replacing the systems you already use day to day.',
-        },
-        {
-          num: '03',
-          title: 'AI over legacy',
-          desc: 'We add an AI layer over your existing system and multiply the value of what you already have.',
+          desc: 'We build digital products from scratch — modern, right-sized, modeled to solve your problem, not the market average.',
+          bullets: [
+            'Scalable and modern solutions',
+            'Current and well-tested technologies',
+            'Focus on performance and experience',
+          ],
+          cta: 'See how it works',
           featured: true,
         },
         {
-          num: '04',
+          num: '02',
+          title: 'Automation',
+          desc: 'New workflows that pull your team out of repetitive operational work and give back hours for what matters.',
+          bullets: [
+            'Smart workflows',
+            'Integration with your tools',
+            'Less manual work, more efficiency',
+          ],
+          cta: 'See possibilities',
+        },
+        {
+          num: '03',
           title: 'Technical consulting',
-          desc: 'Strategic and technical support for architecture decisions, stack choice and product growth.',
+          desc: 'Discovery, architecture and a second opinion for teams that need outside validation.',
+          bullets: [
+            'Discovery and feasibility analysis',
+            'Architecture and best practices',
+            'Code review and technical mentoring',
+          ],
+          cta: 'Talk to a specialist',
         },
       ],
+      banner: {
+        title: "Don't know where to start?",
+        desc: "Let's talk about your challenge.",
+        cta: 'Schedule a conversation',
+      },
     },
     ai: {
       label: 'Our Edge',
@@ -434,11 +469,6 @@ const content: Record<Locale, SiteContent> = {
       rights: 'All rights reserved.',
       privacy: 'Privacy Policy',
     },
-    stub: {
-      label: 'Coming soon',
-      title: 'This page is under construction.',
-      leadBefore: 'In the meantime, reach us at',
-    },
     langSwitch: { label: 'Language' },
     preloader: { brand: 'Diretriz' },
   },
@@ -454,9 +484,6 @@ export function getContent(locale: Locale): SiteContent {
 
 const routeMap = {
   home: { pt: '/', en: '/en/' },
-  about: { pt: '/sobre', en: '/en/about' },
-  services: { pt: '/servicos', en: '/en/services' },
-  contact: { pt: '/contato', en: '/en/contact' },
 } as const;
 
 export type RouteKey = keyof typeof routeMap;

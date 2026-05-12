@@ -12,6 +12,34 @@ const c = getContent(locale);
 <section class="section-pad section-tint" id="servicos" data-screen-label="03 Pilares">
   <div class="container">
     <div class="pillars__head">
+      <div class="pillars__deco" aria-hidden="true">
+        <svg class="deco deco--tl" viewBox="0 0 60 60" fill="none">
+          <circle cx="30" cy="30" r="22" stroke="currentColor" stroke-width="1.2" />
+          <circle cx="30" cy="30" r="14" stroke="currentColor" stroke-width="1.2" />
+          <circle cx="30" cy="30" r="6" fill="currentColor" />
+        </svg>
+        <svg class="deco-line deco-line--tl" viewBox="0 0 140 60" fill="none">
+          <path d="M2 30 Q 70 5 138 30" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 5" stroke-linecap="round" />
+        </svg>
+
+        <svg class="deco deco--bl" viewBox="0 0 60 60" fill="none">
+          <path d="M22 22 L12 30 L22 38 M38 22 L48 30 L38 38" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+        <svg class="deco deco--tr" viewBox="0 0 60 60" fill="none">
+          <path d="M6 30 L54 8 L36 54 L30 34 L6 30 Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+        </svg>
+        <svg class="deco-line deco-line--tr" viewBox="0 0 160 80" fill="none">
+          <path d="M2 60 Q 70 60 130 14" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 5" stroke-linecap="round" />
+        </svg>
+
+        <svg class="deco deco--br" viewBox="0 0 60 60" fill="none">
+          <rect x="10" y="32" width="8" height="18" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+          <rect x="26" y="22" width="8" height="28" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+          <rect x="42" y="14" width="8" height="36" rx="1.5" stroke="currentColor" stroke-width="1.4" />
+        </svg>
+      </div>
+
       <div class="section-label center reveal reveal-fade">{c.pillars.label}</div>
       <h2 class="pillars__title reveal reveal-up reveal-d1">
         {c.pillars.titleStart}<span class="blue">{c.pillars.titleAccent}</span>{c.pillars.titleEnd}
@@ -22,46 +50,81 @@ const c = getContent(locale);
     <div class="pillars__grid">
       {c.pillars.items.map((p, i) => (
         <article class:list={['pillar', 'reveal', 'reveal-up', `reveal-d${i + 1}`, p.featured && 'featured']}>
-          <div class="pillar__icon">
-            {p.num === '01' && (
-              <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
-                <path d="M18 4 L31 11 L31 25 L18 32 L5 25 L5 11 Z" />
-                <path d="M18 4 L18 18 L5 11" />
-                <path d="M18 18 L31 11" />
-                <path d="M18 18 L18 32" />
-              </svg>
-            )}
-            {p.num === '02' && (
-              <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
-                <path d="M6 12 L26 12 L23 8 M30 24 L10 24 L13 28" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            )}
-            {p.num === '03' && (
-              <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
-                <path d="M12 6 C8 6 6 9 6 13 C6 15 7 17 8 18 C7 19 7 21 7 22 C7 26 10 29 14 29 L22 29 C26 29 29 26 29 22 C29 21 29 19 28 18 C29 17 30 15 30 13 C30 9 28 6 24 6 C22 6 21 7 20 8 C19 7 17 6 16 6 C14 6 13 6 12 6 Z" />
-                <circle cx="14" cy="16" r="1" fill="currentColor" />
-                <circle cx="22" cy="16" r="1" fill="currentColor" />
-              </svg>
-            )}
-            {p.num === '04' && (
-              <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.4">
-                <circle cx="13" cy="13" r="4" />
-                <circle cx="25" cy="13" r="4" />
-                <path d="M5 28 C5 23 9 20 13 20 C17 20 21 23 21 28" />
-                <path d="M17 28 C17 23 21 20 25 20 C29 20 33 23 33 28" />
-              </svg>
-            )}
-          </div>
           <div class="pillar__num">{p.num}</div>
+
+          <div class="pillar__icon-box">
+            <div class="pillar__icon">
+              {p.num === '01' && (
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+                  <path d="M18 4 L31 11 L31 25 L18 32 L5 25 L5 11 Z" />
+                  <path d="M18 4 L18 18 L5 11" />
+                  <path d="M18 18 L31 11" />
+                  <path d="M18 18 L18 32" />
+                </svg>
+              )}
+              {p.num === '02' && (
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 4 L9 20 L17 20 L15 32 L27 16 L19 16 Z" />
+                </svg>
+              )}
+              {p.num === '03' && (
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="13" cy="13" r="4" />
+                  <circle cx="25" cy="13" r="4" />
+                  <path d="M5 28 C5 23 9 20 13 20 C17 20 21 23 21 28" />
+                  <path d="M17 28 C17 23 21 20 25 20 C29 20 33 23 33 28" />
+                </svg>
+              )}
+            </div>
+          </div>
+
           <h3 class="pillar__title">{p.title}</h3>
           <p class="pillar__desc">{p.desc}</p>
-          <div class="pillar__arrow">
-            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">
-              <path d="M2 10 L10 2 M4 2 L10 2 L10 8" stroke="currentColor" stroke-width="1.5" fill="none" />
+
+          <hr class="pillar__divider" />
+
+          <ul class="pillar__bullets">
+            {p.bullets.map((b) => (
+              <li>
+                <svg class="pillar__check" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <circle cx="9" cy="9" r="8" stroke="currentColor" stroke-width="1.2" opacity="0.35" />
+                  <path d="M5.5 9 L8 11.5 L12.5 6.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>{b}</span>
+              </li>
+            ))}
+          </ul>
+
+          <a class="pillar__cta" href="#contato">
+            <span>{p.cta}</span>
+            <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2 10 L10 2 M4 2 L10 2 L10 8" stroke="currentColor" stroke-width="1.5" />
             </svg>
-          </div>
+          </a>
         </article>
       ))}
+    </div>
+
+    <div class="pillars__banner reveal reveal-up reveal-d4">
+      <div class="pillars__banner-icon" aria-hidden="true">
+        <svg viewBox="0 0 28 28" fill="none">
+          <path d="M5 8 C5 6.3 6.3 5 8 5 L20 5 C21.7 5 23 6.3 23 8 L23 17 C23 18.7 21.7 20 20 20 L12 20 L7 24 L7 20 L8 20 C6.3 20 5 18.7 5 17 Z"
+            stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" fill="currentColor" fill-opacity="0.1" />
+          <circle cx="11" cy="12.5" r="1.1" fill="currentColor" />
+          <circle cx="14" cy="12.5" r="1.1" fill="currentColor" />
+          <circle cx="17" cy="12.5" r="1.1" fill="currentColor" />
+        </svg>
+      </div>
+      <div class="pillars__banner-text">
+        <strong>{c.pillars.banner.title}</strong>
+        <span>{c.pillars.banner.desc}</span>
+      </div>
+      <a class="pillars__banner-cta" href="#contato">
+        <span>{c.pillars.banner.cta}</span>
+        <svg viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2 10 L10 2 M4 2 L10 2 L10 8" stroke="currentColor" stroke-width="1.6" />
+        </svg>
+      </a>
     </div>
   </div>
 </section>
@@ -70,6 +133,7 @@ const c = getContent(locale);
   .pillars__head {
     text-align: center;
     margin-bottom: 64px;
+    position: relative;
   }
   .pillars__title {
     font-size: var(--fs-h2);
@@ -77,7 +141,7 @@ const c = getContent(locale);
     letter-spacing: -0.035em;
     line-height: 1.05;
     margin: 0 auto 20px;
-    max-width: 22ch;
+    max-width: 26ch;
     text-wrap: balance;
   }
   .pillars__title .blue {
@@ -90,51 +154,121 @@ const c = getContent(locale);
     text-wrap: pretty;
   }
 
-  .pillars__grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
+  /* ---------------- Decoração de ícones flutuantes ---------------- */
+  .pillars__deco {
+    position: absolute;
+    inset: -28px 0 0 0;
+    pointer-events: none;
+    color: var(--color-primary);
+    opacity: 0.45;
+  }
+  .deco,
+  .deco-line {
+    position: absolute;
+  }
+  .deco {
+    width: 44px;
+    height: 44px;
+    color: var(--color-primary-soft);
+  }
+  .deco-line {
+    color: var(--color-primary-soft);
+    opacity: 0.6;
+  }
+  .deco--tl {
+    top: 40px;
+    left: 6%;
+  }
+  .deco-line--tl {
+    top: 50px;
+    left: calc(6% + 48px);
+    width: 140px;
+    height: 60px;
+  }
+  .deco--bl {
+    top: 100px;
+    left: 14%;
+  }
+  .deco--tr {
+    top: 28px;
+    right: 6%;
+    color: var(--color-primary);
+  }
+  .deco-line--tr {
+    top: 56px;
+    right: calc(6% + 48px);
+    width: 160px;
+    height: 80px;
+  }
+  .deco--br {
+    top: 110px;
+    right: 14%;
   }
 
+  /* ---------------- Grid ---------------- */
+  .pillars__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  /* ---------------- Card ---------------- */
   .pillar {
     background: var(--color-bg-elevated);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    padding: 28px;
+    border-radius: var(--radius-2xl);
+    padding: 32px;
     transition: border-color 0.4s var(--ease), transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
     position: relative;
-    cursor: pointer;
   }
   .pillar:hover {
     border-color: var(--color-primary-soft);
     transform: translateY(-4px);
-    box-shadow: 0 20px 40px -20px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 24px 48px -24px rgba(37, 99, 235, 0.25);
   }
   .pillar.featured {
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 1px var(--color-primary), 0 16px 36px -16px rgba(37, 99, 235, 0.3);
+    background: linear-gradient(180deg, rgba(219, 234, 254, 0.45) 0%, var(--color-bg-elevated) 60%);
+    box-shadow: 0 0 0 1px var(--color-primary), 0 20px 44px -20px rgba(37, 99, 235, 0.3);
   }
 
-  .pillar__icon {
-    width: 36px;
-    height: 36px;
-    color: var(--color-primary);
-    margin-bottom: 16px;
-  }
   .pillar__num {
     font-family: var(--font-mono);
-    font-size: var(--fs-mono);
-    color: var(--color-text-dim);
+    font-size: 0.875rem;
+    color: var(--color-primary);
     letter-spacing: 0.05em;
-    font-weight: 500;
-  }
-  .pillar__title {
-    font-size: 1.125rem;
     font-weight: 600;
-    letter-spacing: -0.015em;
+    margin-bottom: 4px;
+  }
+
+  .pillar__icon-box {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-lg);
+    background: var(--color-primary-pale);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .pillar__icon {
+    width: 28px;
+    height: 28px;
+  }
+  .pillar__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .pillar__title {
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     line-height: 1.2;
     margin: 0;
     color: var(--color-text);
@@ -142,37 +276,173 @@ const c = getContent(locale);
   .pillar__desc {
     font-size: var(--fs-small);
     color: var(--color-text-muted);
-    line-height: 1.5;
+    line-height: 1.55;
     margin: 0;
     text-wrap: pretty;
+  }
+
+  .pillar__divider {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 6px 0 4px;
+    width: 100%;
+  }
+
+  .pillar__bullets {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
     flex: 1;
   }
-  .pillar__arrow {
+  .pillar__bullets li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: var(--fs-small);
+    color: var(--color-text-muted);
+  }
+  .pillar__check {
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+  }
+
+  .pillar__cta {
     margin-top: 16px;
-    width: 28px;
-    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: gap 0.3s var(--ease), color 0.3s;
+  }
+  .pillar__cta svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.3s var(--ease);
+  }
+  .pillar:hover .pillar__cta {
+    gap: 12px;
+  }
+  .pillar:hover .pillar__cta svg {
+    transform: translate(2px, -2px);
+  }
+
+  /* ---------------- Banner CTA ---------------- */
+  .pillars__banner {
+    margin-top: 32px;
+    background: var(--color-bg-deep);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .pillars__banner-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
+    background: var(--color-bg-elevated);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--color-border-strong);
-    color: var(--color-text-muted);
-    transition: background 0.3s, color 0.3s, border-color 0.3s;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px -4px rgba(37, 99, 235, 0.2);
   }
-  .pillar:hover .pillar__arrow {
+  .pillars__banner-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  .pillars__banner-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pillars__banner-text strong {
+    font-size: var(--fs-body);
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .pillars__banner-text span {
+    font-size: var(--fs-small);
+    color: var(--color-text-muted);
+  }
+  .pillars__banner-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     background: var(--color-primary);
-    border-color: var(--color-primary);
     color: #fff;
+    padding: 12px 22px;
+    border-radius: var(--radius-md);
+    font-size: var(--fs-small);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.3s var(--ease), transform 0.3s var(--ease), gap 0.3s var(--ease);
+    flex-shrink: 0;
+  }
+  .pillars__banner-cta:hover {
+    background: var(--color-primary-bright);
+    gap: 12px;
+  }
+  .pillars__banner-cta svg {
+    width: 12px;
+    height: 12px;
+    transition: transform 0.3s var(--ease);
+  }
+  .pillars__banner-cta:hover svg {
+    transform: translate(2px, -2px);
   }
 
+  /* ---------------- Responsivo ---------------- */
   @media (max-width: 1100px) {
     .pillars__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
+  @media (max-width: 900px) {
+    .pillars__deco {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .pillars__banner {
+      flex-direction: column;
+      align-items: stretch;
+      text-align: center;
+      padding: 24px;
+    }
+    .pillars__banner-icon {
+      margin: 0 auto;
+    }
+    .pillars__banner-cta {
+      justify-content: center;
+    }
+  }
   @media (max-width: 600px) {
     .pillars__grid {
       grid-template-columns: 1fr;
+    }
+    .pillar {
+      padding: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pillars__deco {
+      display: none;
+    }
+    .pillar:hover {
+      transform: none;
     }
   }
 </style>
