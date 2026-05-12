@@ -120,11 +120,6 @@ export interface SiteContent {
     rights: string;
     privacy: string;
   };
-  stub: {
-    label: string;
-    title: string;
-    leadBefore: string;
-  };
   langSwitch: { label: string };
   preloader: { brand: string };
 }
@@ -146,13 +141,13 @@ const content: Record<Locale, SiteContent> = {
       ctaSecondary: 'Conhecer mais',
     },
     manifesto: {
-      label: 'Nosso Manifesto',
-      lineA: 'Não substituímos o que você já tem.',
-      lineB: 'Amplificamos com tecnologia.',
+      label: 'Nosso processo',
+      lineA: 'Escutamos o problema antes de escrever uma linha de código.',
+      lineB: 'Então construímos rápido, moderno e na diretriz do seu negócio.',
     },
     pillars: {
       label: 'Serviços',
-      titleStart: 'Quatro frentes. ',
+      titleStart: 'Três frentes. ',
       titleAccent: 'Uma forma',
       titleEnd: ' de trabalhar.',
       intro:
@@ -161,55 +156,50 @@ const content: Record<Locale, SiteContent> = {
         {
           num: '01',
           title: 'Produtos sob medida',
-          desc: 'Desenvolvemos produtos digitais do zero, com foco no que realmente importa para o seu negócio.',
-        },
-        {
-          num: '02',
-          title: 'Automação de fluxos',
-          desc: 'Automatizamos processos internos sem trocar os sistemas que você já usa no dia a dia.',
-        },
-        {
-          num: '03',
-          title: 'IA sobre legado',
-          desc: 'Adicionamos uma camada de inteligência artificial sobre seu sistema atual e multiplicamos o valor do que você já tem.',
+          desc: 'Construímos produtos digitais do zero — modernos, do seu tamanho, modelados para resolver o seu problema, não o do mercado.',
           featured: true,
         },
         {
-          num: '04',
+          num: '02',
+          title: 'Automação',
+          desc: 'Workflows novos que tiram seu time do operacional repetitivo e devolvem horas para o que importa.',
+        },
+        {
+          num: '03',
           title: 'Consultoria técnica',
-          desc: 'Apoio estratégico e técnico para decisões de arquitetura, escolha de stack e crescimento do produto.',
+          desc: 'Discovery, arquitetura e segunda opinião para quem tem time interno e precisa de validação externa.',
         },
       ],
     },
     ai: {
-      label: 'Nosso Diferencial',
-      titleStart: 'IA sobre o que ',
-      titleAccent: 'já existe',
+      label: 'Frente em desenvolvimento',
+      titleStart: 'IA está no nosso ',
+      titleAccent: 'radar',
       titleEnd: '.',
       copy:
-        'Conectamos nossa camada de IA aos seus sistemas atuais e liberamos novas possibilidades com inteligência, sem ruptura, sem começar do zero.',
-      cta: 'Saiba como funciona',
-      layerLabel: 'CAMADA DE IA',
-      statusLabel: 'online',
-      systems: ['ERP', 'CRM', 'Planilhas', 'Sistemas', 'Outros'],
+        'Estamos explorando como a inteligência artificial pode entrar nos produtos que construímos — sem promessa de roadmap, sem buzzword. Quando fizer sentido para o problema, fizer sentido para o time.',
+      cta: 'Conversar sobre IA',
+      layerLabel: 'EM EXPLORAÇÃO',
+      statusLabel: 'explorando',
+      systems: ['Atendimento', 'Análise', 'Operações', 'Documentos', 'Decisão'],
     },
     process: {
       label: 'Como trabalhamos',
       titleStart: 'Cinco passos. ',
       titleAccent: 'Sem mistério.',
       steps: [
-        { n: '01', title: 'Entendemos', desc: 'Mergulhamos no seu negócio e no problema de verdade.' },
-        { n: '02', title: 'Planejamos', desc: 'Desenhamos a solução sob medida com foco em resultados rápidos.' },
-        { n: '03', title: 'Construímos', desc: 'Desenvolvemos com qualidade, testes e transparência total.' },
-        { n: '04', title: 'Entregamos', desc: 'Colocamos em produção de forma segura e acompanhada.' },
-        { n: '05', title: 'Evoluímos', desc: 'Iteramos e aprimoramos sempre junto com seu time.' },
+        { n: '01', title: 'Entendemos', desc: 'Discovery primeiro. Não escrevemos código antes de mapear o problema de verdade.' },
+        { n: '02', title: 'Planejamos', desc: 'Você vê escopo, marcos e o porquê de cada decisão. Sem caixa-preta.' },
+        { n: '03', title: 'Construímos', desc: 'Stack moderna, código limpo, escolhas explicáveis.' },
+        { n: '04', title: 'Entregamos', desc: 'Em produção, acompanhado — não te deixamos sozinho na hora do uso.' },
+        { n: '05', title: 'Evoluímos', desc: 'Iteração contínua junto com seu time, não para ele.' },
       ],
     },
     outro: {
       label: '/ Contato',
       titleStart: 'Vamos construir o ',
       titleAccent: 'próximo passo',
-      titleEnd: ' do seu negócio.',
+      titleEnd: ' do seu produto.',
       lede:
         'Conta o que está te tirando o sono. A gente responde em até 1 dia útil com uma conversa, não com um orçamento.',
       info: [
@@ -277,11 +267,6 @@ const content: Record<Locale, SiteContent> = {
       ],
       rights: 'Todos os direitos reservados.',
       privacy: 'Política de Privacidade',
-    },
-    stub: {
-      label: 'Em breve',
-      title: 'Esta página está em construção.',
-      leadBefore: 'Por enquanto, fale com a gente em',
     },
     langSwitch: { label: 'Idioma' },
     preloader: { brand: 'Diretriz' },
@@ -434,11 +419,6 @@ const content: Record<Locale, SiteContent> = {
       rights: 'All rights reserved.',
       privacy: 'Privacy Policy',
     },
-    stub: {
-      label: 'Coming soon',
-      title: 'This page is under construction.',
-      leadBefore: 'In the meantime, reach us at',
-    },
     langSwitch: { label: 'Language' },
     preloader: { brand: 'Diretriz' },
   },
@@ -454,9 +434,6 @@ export function getContent(locale: Locale): SiteContent {
 
 const routeMap = {
   home: { pt: '/', en: '/en/' },
-  about: { pt: '/sobre', en: '/en/about' },
-  services: { pt: '/servicos', en: '/en/services' },
-  contact: { pt: '/contato', en: '/en/contact' },
 } as const;
 
 export type RouteKey = keyof typeof routeMap;
