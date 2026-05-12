@@ -30,7 +30,15 @@ export interface PillarItem {
   num: string;
   title: string;
   desc: string;
+  bullets: string[];
+  cta: string;
   featured?: boolean;
+}
+
+export interface PillarsBanner {
+  title: string;
+  desc: string;
+  cta: string;
 }
 
 export interface ProcessStep {
@@ -78,6 +86,7 @@ export interface SiteContent {
     titleEnd: string;
     intro: string;
     items: PillarItem[];
+    banner: PillarsBanner;
   };
   ai: {
     label: string;
@@ -148,8 +157,8 @@ const content: Record<Locale, SiteContent> = {
     pillars: {
       label: 'Serviços',
       titleStart: 'Três frentes. ',
-      titleAccent: 'Uma forma',
-      titleEnd: ' de trabalhar.',
+      titleAccent: 'Uma forma de entregar resultados',
+      titleEnd: '.',
       intro:
         'Sem pacote pronto, sem template. Cada projeto começa entendendo o problema antes de qualquer linha de código.',
       items: [
@@ -157,19 +166,42 @@ const content: Record<Locale, SiteContent> = {
           num: '01',
           title: 'Produtos sob medida',
           desc: 'Construímos produtos digitais do zero — modernos, do seu tamanho, modelados para resolver o seu problema, não o do mercado.',
+          bullets: [
+            'Soluções escaláveis e modernas',
+            'Tecnologias atuais e bem testadas',
+            'Foco em performance e experiência',
+          ],
+          cta: 'Saiba como funciona',
           featured: true,
         },
         {
           num: '02',
           title: 'Automação',
           desc: 'Workflows novos que tiram seu time do operacional repetitivo e devolvem horas para o que importa.',
+          bullets: [
+            'Workflows inteligentes',
+            'Integração com suas ferramentas',
+            'Menos tarefas manuais, mais eficiência',
+          ],
+          cta: 'Ver possibilidades',
         },
         {
           num: '03',
           title: 'Consultoria técnica',
           desc: 'Discovery, arquitetura e segunda opinião para quem tem time interno e precisa de validação externa.',
+          bullets: [
+            'Discovery e análise de viabilidade',
+            'Arquitetura e boas práticas',
+            'Code review e mentoria técnica',
+          ],
+          cta: 'Falar com um especialista',
         },
       ],
+      banner: {
+        title: 'Não sabe por onde começar?',
+        desc: 'Vamos conversar sobre o seu desafio.',
+        cta: 'Agendar uma conversa',
+      },
     },
     ai: {
       label: 'Frente em desenvolvimento',
@@ -293,34 +325,52 @@ const content: Record<Locale, SiteContent> = {
     },
     pillars: {
       label: 'Services',
-      titleStart: 'Four fronts. ',
-      titleAccent: 'One way',
-      titleEnd: ' of working.',
+      titleStart: 'Three fronts. ',
+      titleAccent: 'One way of delivering results',
+      titleEnd: '.',
       intro:
         'No prepackaged solutions, no templates. Every project starts by understanding the problem before any line of code.',
       items: [
         {
           num: '01',
           title: 'Custom products',
-          desc: 'We build digital products from scratch, focused on what truly matters for your business.',
-        },
-        {
-          num: '02',
-          title: 'Workflow automation',
-          desc: 'We automate internal processes without replacing the systems you already use day to day.',
-        },
-        {
-          num: '03',
-          title: 'AI over legacy',
-          desc: 'We add an AI layer over your existing system and multiply the value of what you already have.',
+          desc: 'We build digital products from scratch — modern, right-sized, modeled to solve your problem, not the market average.',
+          bullets: [
+            'Scalable and modern solutions',
+            'Current and well-tested technologies',
+            'Focus on performance and experience',
+          ],
+          cta: 'See how it works',
           featured: true,
         },
         {
-          num: '04',
+          num: '02',
+          title: 'Automation',
+          desc: 'New workflows that pull your team out of repetitive operational work and give back hours for what matters.',
+          bullets: [
+            'Smart workflows',
+            'Integration with your tools',
+            'Less manual work, more efficiency',
+          ],
+          cta: 'See possibilities',
+        },
+        {
+          num: '03',
           title: 'Technical consulting',
-          desc: 'Strategic and technical support for architecture decisions, stack choice and product growth.',
+          desc: 'Discovery, architecture and a second opinion for teams that need outside validation.',
+          bullets: [
+            'Discovery and feasibility analysis',
+            'Architecture and best practices',
+            'Code review and technical mentoring',
+          ],
+          cta: 'Talk to a specialist',
         },
       ],
+      banner: {
+        title: "Don't know where to start?",
+        desc: "Let's talk about your challenge.",
+        cta: 'Schedule a conversation',
+      },
     },
     ai: {
       label: 'Our Edge',
