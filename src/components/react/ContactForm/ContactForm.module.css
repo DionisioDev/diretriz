@@ -1,113 +1,351 @@
+/* Card de formulário claro — portado do design da seção de contato. */
 .form {
+  background: #ffffff;
+  border: 1px solid rgba(11, 18, 32, 0.05);
+  border-radius: 24px;
+  padding: clamp(28px, 3vw, 44px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 36px;
-  border-radius: var(--radius-2xl);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--color-border-on-dark);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  gap: 22px;
+  box-shadow: 0 30px 70px -34px rgba(20, 38, 78, 0.28);
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+.formTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0b1220;
+}
+.formSub {
+  margin: -14px 0 0;
+  font-size: 0.9375rem;
+  color: #8a93a6;
+  line-height: 1.5;
 }
 
 .fieldRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
 .field label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(229, 235, 245, 0.55);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #3a4254;
 }
-
 .field input,
 .field textarea {
   font-family: inherit;
   font-size: 0.9375rem;
-  color: #FFFFFF;
-  background: rgba(11, 18, 32, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  padding: 12px 14px;
-  transition: border-color 0.2s, background 0.2s;
+  color: #0b1220;
+  background: #f5f7fb;
+  border: 1px solid rgba(11, 18, 32, 0.07);
+  border-radius: 12px;
+  padding: 13px 16px;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
-
 .field input::placeholder,
 .field textarea::placeholder {
-  color: rgba(229, 235, 245, 0.35);
+  color: #aeb6c6;
 }
-
 .field input:focus,
 .field textarea:focus {
   outline: none;
-  border-color: rgba(96, 165, 250, 0.6);
-  background: rgba(11, 18, 32, 0.7);
+  border-color: var(--color-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 .field textarea {
   resize: vertical;
-  min-height: 110px;
+  min-height: 104px;
+  line-height: 1.55;
 }
 
+/* Validação inline */
+.field.hasError input,
+.field.hasError textarea {
+  border-color: #e0566b;
+  background: #fff5f6;
+  box-shadow: 0 0 0 3px rgba(224, 86, 107, 0.1);
+}
+.fieldError {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #d23e55;
+  margin-top: -1px;
+  animation: cfErr 0.28s var(--ease) both;
+}
+@keyframes cfErr {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Chips de assunto (seleção única) */
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 2px;
 }
-
 .chip {
-  position: relative;
-  cursor: pointer;
-}
-
-.chip input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.chip span {
-  display: inline-block;
-  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 20px;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: 0.8125rem;
-  color: rgba(229, 235, 245, 0.75);
+  border: 1px solid rgba(11, 18, 32, 0.12);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4b5468;
+  cursor: pointer;
   transition: all 0.18s var(--ease);
 }
-
-.chip:hover span {
-  border-color: rgba(255, 255, 255, 0.3);
-  color: #FFFFFF;
+.chip:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  color: #0b1220;
 }
-
-.chip input:checked + span {
+.chipActive {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: #FFFFFF;
+  color: #ffffff;
+  box-shadow: 0 8px 20px -10px rgba(37, 99, 235, 0.55);
+}
+.chipActive:hover {
+  color: #ffffff;
+}
+.chipCheck {
+  width: 14px;
+  height: 14px;
 }
 
+/* Submit */
 .submit {
-  align-self: flex-start;
-  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 17px 24px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #3b6ff0 0%, #2d5be3 100%);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  box-shadow: 0 16px 34px -14px rgba(37, 99, 235, 0.6);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), background 0.3s var(--ease);
+}
+.submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 40px -14px rgba(37, 99, 235, 0.65);
+}
+.submit:disabled {
+  cursor: default;
+  transform: none;
+}
+.submitIcon {
+  width: 17px;
+  height: 17px;
+}
+.isSending {
+  background: linear-gradient(180deg, #4b79f2 0%, #3e68e8 100%);
+}
+.submitSpinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  animation: cfSpin 0.7s linear infinite;
+}
+@keyframes cfSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.sent {
-  background: #10B981 !important;
-  border-color: #10B981 !important;
+/* Nota de rodapé + fallback de e-mail */
+.formNote {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: -6px 0 0;
+  font-size: 0.84rem;
+  color: #9aa2b3;
+  text-align: center;
+}
+.formNoteIcon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.formNoteLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.35);
+  transition: border-color 0.2s;
+}
+.formNoteLink:hover {
+  border-bottom-color: var(--color-primary);
 }
 
-@media (max-width: 880px) {
+/* Erro de rede (envio falhou) */
+.formError {
+  margin: -6px 0 0;
+  font-size: 0.84rem;
+  text-align: center;
+  color: #d23e55;
+  font-weight: 500;
+}
+
+/* Honeypot — fora da tela, sem display:none (alguns bots ignoram campos ocultos) */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* Card de sucesso — substitui o formulário, mesmo invólucro, celebrativo */
+.success {
+  background: #ffffff;
+  border: 1px solid rgba(11, 18, 32, 0.05);
+  border-radius: 24px;
+  padding: clamp(40px, 4vw, 60px) clamp(28px, 3vw, 44px);
+  box-shadow: 0 30px 70px -34px rgba(20, 38, 78, 0.28);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 380px;
+  justify-content: center;
+}
+.successBurst {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin-bottom: 26px;
+  color: var(--color-primary);
+}
+.successRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(37, 99, 235, 0.45);
+  animation: cfRing 2.4s ease-out infinite;
+  opacity: 0;
+}
+.successRing2 {
+  animation-delay: 0.8s;
+}
+@keyframes cfRing {
+  0% {
+    opacity: 0.6;
+    transform: scale(0.7);
+  }
+  80% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.7);
+  }
+}
+.successCheck {
+  width: 70px;
+  height: 70px;
+  position: relative;
+  color: var(--color-primary);
+}
+.successCheck path {
+  stroke-dasharray: 44;
+  stroke-dashoffset: 44;
+  animation: cfCheck 0.55s var(--ease) 0.15s forwards;
+}
+@keyframes cfCheck {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.successTitle {
+  margin: 0 0 12px;
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0b1220;
+}
+.successText {
+  margin: 0 0 28px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5468;
+  max-width: 36ch;
+}
+.successText strong {
+  color: #0b1220;
+  font-weight: 600;
+}
+.successReset {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  border-radius: 12px;
+  border: 1px solid rgba(11, 18, 32, 0.12);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #3a4254;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.successReset:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .successRing {
+    animation: none;
+    opacity: 0;
+  }
+  .successCheck path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+  .submitSpinner {
+    animation-duration: 0.01ms;
+  }
+}
+
+@media (max-width: 560px) {
   .fieldRow {
     grid-template-columns: 1fr;
   }

@@ -19,6 +19,17 @@ html {
   color: var(--color-text);
 }
 
+/* Âncoras (#sobre, #servicos, …) não ficam escondidas atrás do header fixo.
+   (scroll-behavior: smooth + reduced-motion já vêm do reset.css) */
+section[id] {
+  scroll-margin-top: 84px;
+}
+
+/* Trava o scroll do body quando o menu mobile está aberto */
+body.nav-open {
+  overflow: hidden;
+}
+
 body {
   font-size: var(--fs-body);
   font-weight: var(--weight-regular);

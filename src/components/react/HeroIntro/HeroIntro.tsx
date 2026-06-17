@@ -5,8 +5,8 @@ import Typewriter from '../Typewriter/Typewriter';
 import styles from './HeroIntro.module.css';
 
 interface Props {
-  /** Tagline em 4 linhas (segunda linha recebe destaque azul) */
-  tagline: [string, string, string, string];
+  /** Tagline em 3 linhas (segunda linha recebe destaque azul) */
+  tagline: [string, string, string];
   kicker: string;
   sub: string;
   ctaPrimary: string;
@@ -24,8 +24,8 @@ interface Props {
  * Ordem:
  *   1. Preloader (0→100) → onDone dispara start do avião
  *   2. HeroPlane voa de fora-esquerda → onLanded dispara cascata do typewriter
- *   3. step 1..4: typewriter por linha (95ms/char + jitter)
- *   4. step >= 5: subtagline + CTAs em fade
+ *   3. step 1..3: typewriter por linha (95ms/char + jitter)
+ *   4. step >= 4: subtagline + CTAs em fade
  *
  * Roda como ilha React (`client:only="react"`) — SEO usa h1 SR-only no Astro pai.
  */
@@ -80,14 +80,11 @@ export default function HeroIntro({
           <span className={styles.line}>
             <Typewriter text={tagline[2]} start={step >= 3} speed={95} onDone={() => setStep(4)} />
           </span>
-          <span className={styles.line}>
-            <Typewriter text={tagline[3]} start={step >= 4} speed={95} onDone={() => setStep(5)} />
-          </span>
         </h1>
 
-        <p className={`${styles.sub} fade-in${step >= 5 ? ' is-in' : ''}`}>{sub}</p>
+        <p className={`${styles.sub} fade-in${step >= 4 ? ' is-in' : ''}`}>{sub}</p>
 
-        <div className={`${styles.ctas} fade-in fade-d1${step >= 5 ? ' is-in' : ''}`}>
+        <div className={`${styles.ctas} fade-in fade-d1${step >= 4 ? ' is-in' : ''}`}>
           <a href={contactHref} className="btn btn--primary">
             {ctaPrimary}
             <svg className="btn-arrow" viewBox="0 0 14 14" aria-hidden="true">

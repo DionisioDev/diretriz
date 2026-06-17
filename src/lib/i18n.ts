@@ -52,11 +52,9 @@ export interface FooterCol {
   links: { label: string; href: string }[];
 }
 
-export interface InfoRow {
-  label: string;
-  value: string;
-  href?: string;
-  pulse?: boolean;
+export interface OutroItem {
+  title: string;
+  desc: string;
 }
 
 export interface SiteContent {
@@ -69,15 +67,16 @@ export interface SiteContent {
   };
   hero: {
     kicker: string;
-    tagline: [string, string, string, string];
+    tagline: [string, string, string];
     sub: string;
     ctaPrimary: string;
     ctaSecondary: string;
   };
   manifesto: {
     label: string;
-    lineA: string;
-    lineB: string;
+    titleStart: string;
+    titleAccent: string;
+    subtitle: string;
   };
   pillars: {
     label: string;
@@ -106,21 +105,37 @@ export interface SiteContent {
     steps: ProcessStep[];
   };
   outro: {
-    label: string;
+    badge: string;
     titleStart: string;
     titleAccent: string;
     titleEnd: string;
     lede: string;
-    info: InfoRow[];
-    socials: { label: string; href: string }[];
+    features: OutroItem[];
+    stats: OutroItem[];
+    closingStart: string;
+    closingAccent: string;
     form: {
+      title: string;
+      sub: string;
       name: { label: string; placeholder: string };
       company: { label: string; placeholder: string };
       email: { label: string; placeholder: string };
       topic: { label: string; chips: string[] };
       message: { label: string; placeholder: string };
       submit: string;
-      submitted: string;
+      submitting: string;
+      successThanks: string;
+      successTitle: string;
+      successBody: string;
+      successHighlight: string;
+      successReset: string;
+      note: string;
+      noteLink: string;
+      errorName: string;
+      errorEmail: string;
+      errorEmailInvalid: string;
+      errorMessage: string;
+      error: string;
     };
   };
   footer: {
@@ -131,6 +146,20 @@ export interface SiteContent {
   };
   langSwitch: { label: string };
   preloader: { brand: string };
+  chat: {
+    launcher: string;
+    title: string;
+    subtitle: string;
+    greeting: string;
+    placeholder: string;
+    send: string;
+    disclaimer: string;
+    error: string;
+    sent: string;
+    retry: string;
+    open: string;
+    close: string;
+  };
 }
 
 const content: Record<Locale, SiteContent> = {
@@ -144,15 +173,17 @@ const content: Record<Locale, SiteContent> = {
     },
     hero: {
       kicker: '/ Diretriz Tecnologia',
-      tagline: ['Construímos.', 'Rápido.', 'Sob medida.', 'Robusto.'],
+      tagline: ['Construímos.', 'Rápido.', 'Sob medida.'],
       sub: 'Tecnologia que aponta na direção do seu negócio.',
       ctaPrimary: 'Falar com a Diretriz',
       ctaSecondary: 'Conhecer mais',
     },
     manifesto: {
       label: 'Nosso processo',
-      lineA: 'Escutamos o problema antes de escrever uma linha de código.',
-      lineB: 'Então construímos rápido, moderno e na diretriz do seu negócio.',
+      titleStart: 'Estratégia, produto e tecnologia trabalhando ',
+      titleAccent: 'na mesma direção.',
+      subtitle:
+        'Um processo simples para transformar desafios complexos em soluções digitais escaláveis.',
     },
     pillars: {
       label: 'Serviços',
@@ -204,13 +235,13 @@ const content: Record<Locale, SiteContent> = {
       },
     },
     ai: {
-      label: 'Frente em desenvolvimento',
-      titleStart: 'IA está no nosso ',
-      titleAccent: 'radar',
+      label: 'IA para o seu negócio',
+      titleStart: 'O que a IA pode abrir pro seu negócio? Vamos descobrir ',
+      titleAccent: 'juntos',
       titleEnd: '.',
       copy:
-        'Estamos explorando como a inteligência artificial pode entrar nos produtos que construímos — sem promessa de roadmap, sem buzzword. Quando fizer sentido para o problema, fizer sentido para o time.',
-      cta: 'Conversar sobre IA',
+        'As possibilidades com inteligência artificial crescem todo dia, e cada negócio aproveita de um jeito. Por isso a gente não chega com solução pronta — chega com perguntas. A conversa começa entendendo o seu desafio, enxergando onde a IA encaixa de verdade e imaginando o que dá pra construir a partir daí.',
+      cta: 'Vamos conversar sobre IA',
       layerLabel: 'EM EXPLORAÇÃO',
       statusLabel: 'explorando',
       systems: ['Atendimento', 'Análise', 'Operações', 'Documentos', 'Decisão'],
@@ -228,36 +259,56 @@ const content: Record<Locale, SiteContent> = {
       ],
     },
     outro: {
-      label: '/ Contato',
-      titleStart: 'Vamos construir o ',
-      titleAccent: 'próximo passo',
-      titleEnd: ' do seu produto.',
+      badge: 'Contato',
+      titleStart: 'Pronto para tirar ',
+      titleAccent: 'seu projeto',
+      titleEnd: ' do papel?',
       lede:
-        'Conta o que está te tirando o sono. A gente responde em até 1 dia útil com uma conversa, não com um orçamento.',
-      info: [
-        { label: 'E-mail', value: 'diretriztecnologia@gmail.com', href: 'mailto:diretriztecnologia@gmail.com' },
-        { label: 'Disponibilidade', value: 'Recebendo novos projetos para 2026', pulse: true },
-        { label: 'Tempo de resposta', value: '≤ 24h em dias úteis' },
-        { label: 'Onde estamos', value: 'Brasil · Atendimento 100% remoto' },
+        'Conte o que você precisa e vamos encontrar a melhor forma de transformar sua ideia em realidade.',
+      features: [
+        { title: 'Resposta rápida', desc: 'Retornamos em até 1 dia útil com uma resposta de verdade.' },
+        {
+          title: 'Soluções sob medida',
+          desc: 'Analisamos seu contexto para propor a melhor solução para o seu negócio.',
+        },
+        { title: 'Confidencialidade', desc: 'Seus dados e informações estão seguros com a gente.' },
       ],
-      socials: [
-        { label: 'LinkedIn', href: '#' },
-        { label: 'Instagram', href: '#' },
+      stats: [
+        { title: 'Atendimento ágil', desc: 'Retorno em até 1 dia útil com uma resposta objetiva.' },
+        { title: 'Especialistas de verdade', desc: 'Conversas estratégicas com quem entende do assunto.' },
+        { title: 'Soluções que funcionam', desc: 'Tecnologia alinhada com os objetivos do seu negócio.' },
+        { title: 'Foco em resultado', desc: 'Nosso objetivo é gerar impacto real para sua empresa.' },
       ],
+      closingStart: 'Vamos construir o ',
+      closingAccent: 'próximo passo do seu produto.',
       form: {
+        title: 'Vamos conversar',
+        sub: 'Preencha o formulário e conte mais sobre seu projeto.',
         name: { label: 'Nome', placeholder: 'Como você se chama?' },
-        company: { label: 'Empresa', placeholder: 'Onde você trabalha' },
-        email: { label: 'E-mail', placeholder: 'seu@email.com' },
+        company: { label: 'Onde você trabalha', placeholder: 'Sua empresa' },
+        email: { label: 'E-mail corporativo', placeholder: 'seu@email.com' },
         topic: {
           label: 'Sobre o que vamos conversar?',
-          chips: ['Produto sob medida', 'Automação', 'IA sobre legado', 'Consultoria', 'Outro'],
+          chips: ['Produto sob medida', 'Automação', 'IA', 'Outro'],
         },
         message: {
           label: 'Conta o desafio',
           placeholder: 'O contexto, o que está travando, o que seria sucesso pra você.',
         },
         submit: 'Enviar mensagem',
-        submitted: 'Mensagem enviada',
+        submitting: 'Enviando',
+        successThanks: 'Obrigado',
+        successTitle: 'Mensagem enviada!',
+        successBody: 'Recebemos seu contato e retornamos em até',
+        successHighlight: '1 dia útil',
+        successReset: 'Enviar outra mensagem',
+        note: 'Não compartilhamos suas informações. Prefere e-mail?',
+        noteLink: 'Fale direto',
+        errorName: 'Conta pra gente como você se chama.',
+        errorEmail: 'Precisamos de um e-mail pra responder.',
+        errorEmailInvalid: 'Esse e-mail não parece válido.',
+        errorMessage: 'Escreva uma linha sobre o seu desafio.',
+        error: 'Não consegui enviar. Tente de novo ou escreva para diretriztecnologia@gmail.com.',
       },
     },
     footer: {
@@ -302,6 +353,21 @@ const content: Record<Locale, SiteContent> = {
     },
     langSwitch: { label: 'Idioma' },
     preloader: { brand: 'Diretriz' },
+    chat: {
+      launcher: 'Falar com a Diretriz',
+      title: 'Assistente Diretriz',
+      subtitle: 'Toda boa solução começa com uma conversa.',
+      greeting:
+        'Olá! Que desafio trouxe você até aqui? Pode ser um produto pra criar, um processo pra automatizar, ou uma ideia ainda tomando forma. Conta em poucas palavras — a gente entende o contexto e já aponta os próximos passos.',
+      placeholder: 'Escreva sua mensagem…',
+      send: 'Enviar',
+      disclaimer: 'Assistente com IA. O que você contar vira um lead para o time da Diretriz.',
+      error: 'Algo falhou aqui. Tenta de novo, ou escreve direto pra diretriztecnologia@gmail.com.',
+      sent: 'Demanda registrada! O time da Diretriz já recebeu e responde em até 1 dia útil.',
+      retry: 'Tentar de novo',
+      open: 'Abrir chat',
+      close: 'Fechar chat',
+    },
   },
   en: {
     nav: {
@@ -313,15 +379,17 @@ const content: Record<Locale, SiteContent> = {
     },
     hero: {
       kicker: '/ Diretriz Tecnologia',
-      tagline: ['We build.', 'Fast.', 'Tailored.', 'Solid.'],
+      tagline: ['We build.', 'Fast.', 'Tailored.'],
       sub: 'Technology that points your business in the right direction.',
       ctaPrimary: 'Talk to Diretriz',
       ctaSecondary: 'Learn more',
     },
     manifesto: {
-      label: 'Our Manifesto',
-      lineA: "We don't replace what you have.",
-      lineB: 'We amplify it with technology.',
+      label: 'Our process',
+      titleStart: 'Strategy, product, and technology working ',
+      titleAccent: 'in the same direction.',
+      subtitle:
+        'A simple process to turn complex challenges into scalable digital solutions.',
     },
     pillars: {
       label: 'Services',
@@ -373,60 +441,80 @@ const content: Record<Locale, SiteContent> = {
       },
     },
     ai: {
-      label: 'Our Edge',
-      titleStart: 'AI over what ',
-      titleAccent: 'already exists',
+      label: 'AI for your business',
+      titleStart: "What could AI open up for your business? Let's find out ",
+      titleAccent: 'together',
       titleEnd: '.',
       copy:
-        'We connect our AI layer to your current systems and unlock new possibilities — no disruption, no starting over.',
-      cta: 'See how it works',
-      layerLabel: 'AI LAYER',
-      statusLabel: 'online',
-      systems: ['ERP', 'CRM', 'Spreadsheets', 'Internal', 'Other'],
+        "The possibilities with artificial intelligence grow every day, and every business taps into them differently. That's why we don't show up with a ready-made solution — we show up with questions. The conversation starts by understanding your challenge, seeing where AI truly fits, and imagining what you can build from there.",
+      cta: "Let's talk about AI",
+      layerLabel: 'EXPLORING',
+      statusLabel: 'exploring',
+      systems: ['Support', 'Analysis', 'Operations', 'Documents', 'Decisions'],
     },
     process: {
       label: 'How we work',
       titleStart: 'Five steps. ',
       titleAccent: 'No mystery.',
       steps: [
-        { n: '01', title: 'We understand', desc: 'We dive into your business and the real problem.' },
-        { n: '02', title: 'We plan', desc: 'We design the tailored solution focused on fast outcomes.' },
-        { n: '03', title: 'We build', desc: 'We develop with quality, tests and full transparency.' },
-        { n: '04', title: 'We deliver', desc: 'We ship to production safely and alongside you.' },
-        { n: '05', title: 'We evolve', desc: 'We iterate and improve continuously with your team.' },
+        { n: '01', title: 'We understand', desc: "Discovery first. We don't write code before truly mapping the problem." },
+        { n: '02', title: 'We plan', desc: 'You see scope, milestones and the why behind each decision. No black box.' },
+        { n: '03', title: 'We build', desc: 'Modern stack, clean code, choices we can explain.' },
+        { n: '04', title: 'We deliver', desc: "In production, supported — we don't leave you alone at go-live." },
+        { n: '05', title: 'We evolve', desc: 'Continuous iteration with your team, not just for it.' },
       ],
     },
     outro: {
-      label: '/ Contact',
-      titleStart: "Let's build the ",
-      titleAccent: 'next step',
-      titleEnd: ' of your business.',
+      badge: 'Contact',
+      titleStart: 'Ready to get ',
+      titleAccent: 'your project',
+      titleEnd: ' off the ground?',
       lede:
-        "Tell us what's keeping you up at night. We respond within 1 business day with a conversation, not a quote.",
-      info: [
-        { label: 'Email', value: 'diretriztecnologia@gmail.com', href: 'mailto:diretriztecnologia@gmail.com' },
-        { label: 'Availability', value: 'Booking new projects for 2026', pulse: true },
-        { label: 'Response time', value: '≤ 24h on business days' },
-        { label: 'Where we are', value: 'Brazil · 100% remote engagements' },
+        'Tell us what you need and we will find the best way to turn your idea into reality.',
+      features: [
+        { title: 'Fast response', desc: 'We get back within 1 business day with a real answer.' },
+        {
+          title: 'Tailored solutions',
+          desc: 'We study your context to propose the best solution for your business.',
+        },
+        { title: 'Confidentiality', desc: 'Your data and information are safe with us.' },
       ],
-      socials: [
-        { label: 'LinkedIn', href: '#' },
-        { label: 'Instagram', href: '#' },
+      stats: [
+        { title: 'Agile support', desc: 'A reply within 1 business day with an objective answer.' },
+        { title: 'Real experts', desc: 'Strategic conversations with people who know the subject.' },
+        { title: 'Solutions that work', desc: 'Technology aligned with your business goals.' },
+        { title: 'Focused on results', desc: 'Our goal is to create real impact for your company.' },
       ],
+      closingStart: "Let's build the ",
+      closingAccent: 'next step of your product.',
       form: {
+        title: "Let's talk",
+        sub: 'Fill in the form and tell us more about your project.',
         name: { label: 'Name', placeholder: 'Your name' },
-        company: { label: 'Company', placeholder: 'Where you work' },
-        email: { label: 'Email', placeholder: 'you@email.com' },
+        company: { label: 'Where you work', placeholder: 'Your company' },
+        email: { label: 'Work email', placeholder: 'you@email.com' },
         topic: {
           label: 'What do you want to talk about?',
-          chips: ['Custom product', 'Automation', 'AI over legacy', 'Consulting', 'Other'],
+          chips: ['Custom product', 'Automation', 'AI', 'Other'],
         },
         message: {
           label: 'Tell us the challenge',
           placeholder: 'The context, what is blocking you, what success looks like.',
         },
         submit: 'Send message',
-        submitted: 'Message sent',
+        submitting: 'Sending',
+        successThanks: 'Thank you',
+        successTitle: 'Message sent!',
+        successBody: 'We received your message and will reply within',
+        successHighlight: '1 business day',
+        successReset: 'Send another message',
+        note: 'We never share your information. Prefer email?',
+        noteLink: 'Reach out directly',
+        errorName: 'Let us know your name.',
+        errorEmail: 'We need an email to reply.',
+        errorEmailInvalid: "That email doesn't look valid.",
+        errorMessage: 'Write a line about your challenge.',
+        error: 'Could not send. Try again or write to diretriztecnologia@gmail.com.',
       },
     },
     footer: {
@@ -471,6 +559,21 @@ const content: Record<Locale, SiteContent> = {
     },
     langSwitch: { label: 'Language' },
     preloader: { brand: 'Diretriz' },
+    chat: {
+      launcher: 'Talk to Diretriz',
+      title: 'Diretriz Assistant',
+      subtitle: 'Every good solution starts with a conversation.',
+      greeting:
+        "Hi there! What challenge brought you here? It could be a product to build, a process to automate, or an idea still taking shape. Tell me in a few words — we'll understand the context and point you to the next steps.",
+      placeholder: 'Write your message…',
+      send: 'Send',
+      disclaimer: "AI assistant. What you share becomes a lead for the Diretriz team.",
+      error: 'Something failed here. Try again, or write straight to diretriztecnologia@gmail.com.',
+      sent: "Got it! The Diretriz team has received your request and will reply within 1 business day.",
+      retry: 'Try again',
+      open: 'Open chat',
+      close: 'Close chat',
+    },
   },
 };
 

@@ -16,8 +16,11 @@ const year = new Date().getFullYear();
     <div class="footer__top">
       <div class="footer__brand-col">
         <a href={locale === 'pt' ? '/' : '/en/'} class="footer__brand" aria-label="Diretriz Tecnologia">
-          <BrandMark />
-          Diretriz <small>tecnologia</small>
+          <BrandMark size={30} />
+          <span class="footer__brand-text">
+            <span class="footer__brand-name">Diretriz</span>
+            <small>tecnologia</small>
+          </span>
         </a>
         <p>{c.footer.tagline}</p>
       </div>
@@ -72,16 +75,24 @@ const year = new Date().getFullYear();
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    font-size: 1rem;
-    font-weight: 600;
     color: var(--color-text);
+  }
+  .footer__brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+  .footer__brand-name {
+    font-size: 1.0625rem;
+    font-weight: 600;
     letter-spacing: -0.015em;
   }
   .footer__brand small {
-    font-size: 0.7rem;
+    font-size: 0.66rem;
     color: var(--color-primary);
     font-weight: 500;
-    margin-left: 2px;
+    letter-spacing: 0.04em;
+    margin-top: 3px;
   }
 
   .footer__col h4 {

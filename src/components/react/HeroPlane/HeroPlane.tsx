@@ -51,7 +51,14 @@ export default function HeroPlane({ onLanded }: Props) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
-    const ro = new ResizeObserver(resize);
+    const reduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let staticRedraw: (() => void) | null = null;
+    const ro = new ResizeObserver(() => {
+      resize();
+      staticRedraw?.();
+    });
     ro.observe(canvas);
 
     // Carrega o sprite da logo (sem bloquear render)
@@ -65,7 +72,6 @@ export default function HeroPlane({ onLanded }: Props) {
       y: number,
       angle: number,
       scale: number,
-      landFactor: number,
     ) => {
       if (!planeImg.complete || planeImg.naturalWidth === 0) return;
       const iw = planeImg.naturalWidth;
@@ -73,12 +79,7 @@ export default function HeroPlane({ onLanded }: Props) {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
-      // Sombra suave abaixo do avião
-      ctx.fillStyle = `rgba(37, 99, 235, ${0.16 * (0.4 + 0.6 * landFactor)})`;
-      ctx.beginPath();
-      ctx.ellipse(0, 78 * scale, 90 * scale, 11 * scale, 0, 0, Math.PI * 2);
-      ctx.fill();
-      // Sprite centralizado
+      // Sprite centralizado (sem sombra)
       const drawW = 220 * scale;
       const drawH = drawW * (ih / iw);
       ctx.drawImage(planeImg, -drawW / 2, -drawH / 2, drawW, drawH);
@@ -231,12 +232,24 @@ export default function HeroPlane({ onLanded }: Props) {
         }
       }
 
-      drawBrandPlane(planeX, planeY, planeAngle, scale, easedT);
+      drawBrandPlane(planeX, planeY, planeAngle, scale);
 
       raf = requestAnimationFrame(draw);
     };
 
-    raf = requestAnimationFrame(draw);
+    if (reduced) {
+      // Movimento reduzido: avião direto na posição final, sem voo, trail ou partículas.
+      staticRedraw = () => {
+        ctx.clearRect(0, 0, W, H);
+        const f = getFinal();
+        drawBrandPlane(f.x, f.y, f.angle, planeScaleVal());
+      };
+      staticRedraw();
+      if (!planeImg.complete) planeImg.addEventListener('load', staticRedraw);
+      if (onLandedRef.current) onLandedRef.current();
+    } else {
+      raf = requestAnimationFrame(draw);
+    }
 
     return () => {
       cancelAnimationFrame(raf);

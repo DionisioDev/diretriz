@@ -10,34 +10,214 @@ const c = getContent(locale);
 ---
 
 <section class="section-pad manifesto" id="sobre" data-screen-label="02 Manifesto">
-  <div class="container">
-    <div class="section-label center reveal reveal-fade">{c.manifesto.label}</div>
-    <p class="manifesto__text">
-      <span class="reveal reveal-clip">{c.manifesto.lineA}</span>
-      <br />
-      <span class="blue reveal reveal-clip reveal-d1">{c.manifesto.lineB}</span>
-    </p>
+  <div class="manifesto__decor" aria-hidden="true">
+    <span class="manifesto__corner manifesto__corner--tl"></span>
+    <span class="manifesto__corner manifesto__corner--br"></span>
+    <span class="manifesto__dots manifesto__dots--tr"></span>
+    <span class="manifesto__dots manifesto__dots--bl"></span>
+  </div>
+
+  <div class="container manifesto__inner">
+    <div class="manifesto__eyebrow reveal reveal-fade">
+      <span class="manifesto__line"></span>
+      <span class="manifesto__dot"></span>
+      <span class="manifesto__eyebrow-text">{c.manifesto.label}</span>
+      <span class="manifesto__dot"></span>
+      <span class="manifesto__line"></span>
+    </div>
+
+    <h2 class="manifesto__title reveal reveal-up reveal-d1">
+      {c.manifesto.titleStart}<span class="blue">{c.manifesto.titleAccent}</span>
+    </h2>
+
+    <div class="manifesto__chevrons reveal reveal-fade reveal-d2" aria-hidden="true">
+      <svg viewBox="0 0 12 14" fill="currentColor"><path d="M0 0 L12 7 L0 14 Z" /></svg>
+      <svg viewBox="0 0 12 14" fill="currentColor"><path d="M0 0 L12 7 L0 14 Z" /></svg>
+      <svg viewBox="0 0 12 14" fill="currentColor"><path d="M0 0 L12 7 L0 14 Z" /></svg>
+    </div>
+
+    <p class="manifesto__subtitle reveal reveal-up reveal-d3">{c.manifesto.subtitle}</p>
+
+    <span class="manifesto__rule reveal reveal-fade reveal-d4" aria-hidden="true"></span>
   </div>
 </section>
 
 <style>
   .manifesto {
+    position: relative;
+    overflow: clip;
     text-align: center;
   }
-  .manifesto :global(.section-label) {
-    margin-left: auto;
-    margin-right: auto;
+
+  .manifesto__inner {
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  .manifesto__text {
-    font-size: clamp(1.75rem, 1rem + 3vw, 3.75rem);
-    font-weight: 500;
-    line-height: 1.1;
+
+  /* ---------------- Eyebrow conectado ---------------- */
+  .manifesto__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 34px;
+  }
+  .manifesto__line {
+    width: clamp(40px, 9vw, 130px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.7));
+  }
+  .manifesto__line:last-child {
+    background: linear-gradient(90deg, rgba(37, 99, 235, 0.7), transparent);
+  }
+  .manifesto__dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  }
+  .manifesto__eyebrow-text {
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    color: var(--color-primary);
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ---------------- Título ---------------- */
+  .manifesto__title {
+    font-size: var(--fs-h2);
+    font-weight: 600;
+    line-height: 1.05;
     letter-spacing: -0.035em;
     max-width: 22ch;
     margin: 0 auto;
     text-wrap: balance;
+    color: var(--color-text);
   }
-  .manifesto__text :global(.blue) {
+  .manifesto__title .blue {
     color: var(--color-primary);
+  }
+
+  /* ---------------- Divisor de chevrons ---------------- */
+  .manifesto__chevrons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    color: var(--color-primary);
+  }
+  .manifesto__chevrons svg {
+    width: 13px;
+    height: 15px;
+    display: block;
+  }
+  .manifesto__chevrons svg:nth-child(2) {
+    opacity: 0.78;
+  }
+  .manifesto__chevrons svg:nth-child(3) {
+    opacity: 0.56;
+  }
+
+  /* ---------------- Subtítulo ---------------- */
+  .manifesto__subtitle {
+    margin: 24px auto 0;
+    max-width: 36ch;
+    font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--color-text-muted);
+    text-wrap: balance;
+  }
+
+  /* ---------------- Régua gradiente ---------------- */
+  .manifesto__rule {
+    margin-top: 46px;
+    width: clamp(96px, 14vw, 180px);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    border-radius: var(--radius-full);
+  }
+
+  /* ---------------- Decoração de fundo ---------------- */
+  .manifesto__decor {
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-base);
+    pointer-events: none;
+    overflow: clip;
+  }
+
+  /* Glow difuso + anéis concêntricos finos, mascarados para esvanecer
+     suavemente em direção ao centro da seção. */
+  .manifesto__corner {
+    position: absolute;
+    width: clamp(360px, 46vw, 680px);
+    aspect-ratio: 1;
+  }
+  .manifesto__corner--tl {
+    top: 0;
+    left: 0;
+    transform: translate(-32%, -36%);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.22), transparent 62%),
+      repeating-radial-gradient(
+        circle at 50% 50%,
+        transparent 0 108px,
+        rgba(37, 99, 235, 0.06) 108px 109px
+      );
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 38%, transparent 72%);
+    mask-image: radial-gradient(circle at 50% 50%, #000 38%, transparent 72%);
+  }
+  .manifesto__corner--br {
+    right: 0;
+    bottom: 0;
+    transform: translate(34%, 38%);
+    background:
+      radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.24), transparent 62%),
+      repeating-radial-gradient(
+        circle at 50% 50%,
+        transparent 0 124px,
+        rgba(37, 99, 235, 0.07) 124px 125px
+      );
+    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 74%);
+    mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 74%);
+  }
+
+  /* Grids de pontos nos cantos opostos */
+  .manifesto__dots {
+    position: absolute;
+    width: 132px;
+    height: 108px;
+    background-image: radial-gradient(rgba(37, 99, 235, 0.22) 1.3px, transparent 1.5px);
+    background-size: 17px 17px;
+  }
+  .manifesto__dots--tr {
+    top: 12%;
+    right: 4.5%;
+    -webkit-mask-image: linear-gradient(235deg, #000 25%, transparent 78%);
+    mask-image: linear-gradient(235deg, #000 25%, transparent 78%);
+  }
+  .manifesto__dots--bl {
+    bottom: 14%;
+    left: 3.5%;
+    -webkit-mask-image: linear-gradient(55deg, #000 25%, transparent 78%);
+    mask-image: linear-gradient(55deg, #000 25%, transparent 78%);
+  }
+
+  @media (max-width: 640px) {
+    .manifesto__dots {
+      display: none;
+    }
+    .manifesto__corner {
+      opacity: 0.7;
+    }
+    .manifesto__line {
+      width: clamp(24px, 14vw, 60px);
+    }
   }
 </style>

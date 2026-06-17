@@ -2,7 +2,7 @@
 
 Site institucional — `diretriztecnologia.com.br`
 
-> Construímos. Rápido. Sob medida. Robusto.
+> Construímos. Rápido. Sob medida.
 
 ## Stack
 
@@ -21,6 +21,9 @@ npm run check     # valida tipos e estrutura Astro
 ```
 
 Requer **Node 20+** (ver [`.nvmrc`](.nvmrc)).
+
+> O chat de IA e o formulário rodam em **Pages Functions** (`functions/`), que o `npm run dev`
+> não executa. Para testá-los localmente use `wrangler` — ver [`docs/chat-setup.md`](docs/chat-setup.md).
 
 ## Estrutura
 
