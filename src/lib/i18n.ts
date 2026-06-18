@@ -328,7 +328,7 @@ const content: Record<Locale, SiteContent> = {
           links: [
             { label: 'Produtos sob medida', href: '/#servicos' },
             { label: 'Automação de fluxos', href: '/#servicos' },
-            { label: 'IA sobre legado', href: '/#ai' },
+            { label: 'IA para o seu negócio', href: '/#ai' },
             { label: 'Consultoria técnica', href: '/#servicos' },
           ],
         },
@@ -534,7 +534,7 @@ const content: Record<Locale, SiteContent> = {
           links: [
             { label: 'Custom products', href: '/en/#servicos' },
             { label: 'Workflow automation', href: '/en/#servicos' },
-            { label: 'AI over legacy', href: '/en/#ai' },
+            { label: 'AI for your business', href: '/en/#ai' },
             { label: 'Technical consulting', href: '/en/#servicos' },
           ],
         },

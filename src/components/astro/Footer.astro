@@ -12,7 +12,7 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
-  <div class="container">
+  <div class="footer__card">
     <div class="footer__top">
       <div class="footer__brand-col">
         <a href={locale === 'pt' ? '/' : '/en/'} class="footer__brand" aria-label="Diretriz Tecnologia">
@@ -46,23 +46,39 @@ const year = new Date().getFullYear();
 
 <style>
   .footer {
-    padding: 48px 0 28px;
+    padding: clamp(40px, 6vw, 72px) 0 clamp(24px, 4vw, 40px);
     border-top: 1px solid var(--color-border);
-    background: var(--color-bg);
+    background: linear-gradient(180deg, #eef3fb 0%, #e3ebf7 100%);
+  }
+
+  /* Mesmo padrão de "card flutuante" do header: largura contida com gutters,
+     cantos arredondados (--radius-2xl), borda sutil e sombra. */
+  .footer__card {
+    width: min(calc(100% - var(--gutter) * 2), var(--container-max));
+    margin-inline: auto;
+    background: var(--color-bg-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    padding: clamp(36px, 4.5vw, 56px) clamp(28px, 4vw, 48px) clamp(24px, 3vw, 32px);
   }
 
   .footer__top {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
     gap: 32px;
-    margin-bottom: 32px;
+    margin-bottom: 40px;
     align-items: start;
   }
 
+  /* Divisor vertical após a marca — eco do divisor do header. */
   .footer__brand-col {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-self: stretch;
+    padding-right: clamp(20px, 2.5vw, 36px);
+    border-right: 1px solid var(--color-border);
   }
   .footer__brand-col p {
     color: var(--color-text-muted);
@@ -112,12 +128,14 @@ const year = new Date().getFullYear();
     gap: 8px;
   }
   .footer__col a {
+    display: inline-block;
     color: var(--color-text-muted);
     font-size: var(--fs-small);
-    transition: color 0.3s;
+    transition: color 0.25s var(--ease), transform 0.25s var(--ease);
   }
   .footer__col a:hover {
     color: var(--color-primary);
+    transform: translateX(3px);
   }
 
   .footer__bottom {
@@ -130,10 +148,22 @@ const year = new Date().getFullYear();
     font-size: var(--fs-xs);
     color: var(--color-text-dim);
   }
+  .footer__bottom a,
+  .footer__bottom span:last-child {
+    transition: color 0.25s var(--ease);
+  }
 
   @media (max-width: 880px) {
     .footer__top {
       grid-template-columns: 1fr 1fr;
+    }
+    .footer__brand-col {
+      grid-column: 1 / -1;
+      align-self: auto;
+      padding-right: 0;
+      border-right: none;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--color-border);
     }
   }
 </style>

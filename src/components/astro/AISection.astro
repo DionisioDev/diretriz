@@ -1,5 +1,8 @@
 ---
 import { getContent, getSectionAnchor, type Locale } from '../../lib/i18n';
+import { sectionIcons } from '../../lib/icons';
+import SectionBadge from './SectionBadge.astro';
+import SectionDecor from './SectionDecor.astro';
 import AICanvas from '../react/AICanvas/AICanvas';
 
 interface Props {
@@ -11,12 +14,18 @@ const c = getContent(locale);
 const contactHref = getSectionAnchor('contato', locale);
 ---
 
-<section class="section-pad section-deep" id="ai" data-screen-label="04 IA">
+<section class="section-pad section-deep ai" id="ai" data-screen-label="04 IA">
+  <SectionDecor variant={2} />
+
   <div class="container">
     <div class="ai__head">
       <div>
-        <div class="section-label reveal reveal-fade">{c.ai.label}</div>
-        <h2 class="ai__title reveal reveal-up reveal-d1">
+        <SectionBadge
+          label={c.ai.label}
+          icon={sectionIcons.ai}
+          class="reveal reveal-fade"
+        />
+        <h2 class="section-title ai__title reveal reveal-up reveal-d1">
           {c.ai.titleStart}<span class="blue">{c.ai.titleAccent}</span>{c.ai.titleEnd}
         </h2>
         <p class="ai__copy reveal reveal-up reveal-d2">{c.ai.copy}</p>
@@ -41,6 +50,14 @@ const contactHref = getSectionAnchor('contato', locale);
 </section>
 
 <style>
+  .ai {
+    position: relative;
+    overflow: clip;
+  }
+  .ai > .container {
+    position: relative;
+    z-index: 1;
+  }
   .ai__head {
     display: grid;
     grid-template-columns: 1fr 1.1fr;
@@ -49,15 +66,7 @@ const contactHref = getSectionAnchor('contato', locale);
   }
 
   .ai__title {
-    font-size: var(--fs-h2);
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    line-height: 1.05;
     margin: 0 0 24px 0;
-    text-wrap: balance;
-  }
-  .ai__title .blue {
-    color: var(--color-primary);
   }
 
   .ai__copy {
@@ -80,9 +89,15 @@ const contactHref = getSectionAnchor('contato', locale);
     padding-bottom: 4px;
     transition: gap 0.3s var(--ease);
   }
+  .ai__cta svg {
+    transition: transform 0.3s var(--ease);
+  }
   .ai__cta:hover {
     color: var(--color-primary);
     gap: 16px;
+  }
+  .ai__cta:hover svg {
+    transform: translateX(3px);
   }
 
   .ai__viz {

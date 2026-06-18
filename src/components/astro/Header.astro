@@ -21,17 +21,31 @@ const homePath = getLocalizedPath('home', locale);
   </a>
 
   <nav class="nav__links" aria-label="Principal">
-    <a class="nav__link" href={getSectionAnchor('sobre', locale)}>{c.nav.about}</a>
-    <a class="nav__link" href={getSectionAnchor('servicos', locale)}>{c.nav.services}</a>
-    <a class="nav__link" href={getSectionAnchor('processo', locale)}>{c.nav.process}</a>
-    <a class="nav__link" href={getSectionAnchor('contato', locale)}>{c.nav.contact}</a>
+    <a class="nav__link" data-section="sobre" href={getSectionAnchor('sobre', locale)}>{c.nav.about}</a>
+    <a class="nav__link" data-section="servicos" href={getSectionAnchor('servicos', locale)}>{c.nav.services}</a>
+    <a class="nav__link" data-section="processo" href={getSectionAnchor('processo', locale)}>{c.nav.process}</a>
+    <a class="nav__link" data-section="contato" href={getSectionAnchor('contato', locale)}>{c.nav.contact}</a>
   </nav>
 
   <div class="nav__right">
     <div class="nav__lang" role="group" aria-label={c.langSwitch.label}>
-      <a class:list={['nav__lang-link', locale === 'pt' && 'active']} href="/" lang="pt">{localeShort.pt}</a>
-      <span aria-hidden="true">|</span>
-      <a class:list={['nav__lang-link', locale === 'en' && 'active']} href="/en/" lang="en">{localeShort.en}</a>
+      <a class:list={['nav__lang-link', locale === 'pt' && 'active']} href="/" lang="pt">
+        <span>{localeShort.pt}</span>
+        {locale === 'pt' && (
+          <svg class="nav__lang-caret" viewBox="0 0 10 6" aria-hidden="true">
+            <path d="M1 1.25 5 4.75 9 1.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        )}
+      </a>
+      <span class="nav__lang-sep" aria-hidden="true">|</span>
+      <a class:list={['nav__lang-link', locale === 'en' && 'active']} href="/en/" lang="en">
+        <span>{localeShort.en}</span>
+        {locale === 'en' && (
+          <svg class="nav__lang-caret" viewBox="0 0 10 6" aria-hidden="true">
+            <path d="M1 1.25 5 4.75 9 1.25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        )}
+      </a>
     </div>
     <a href={getSectionAnchor('contato', locale)} class="nav__cta">
       {c.nav.cta}
@@ -70,15 +84,38 @@ const homePath = getLocalizedPath('home', locale);
 </div>
 
 <script>
+  // ---- Estado do header: sombra ao rolar + link ativo (scroll-spy) ----
   const nav = document.getElementById('site-nav');
-  if (nav) {
-    const onScroll = () => {
-      if (window.scrollY > 24) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-  }
+  const spyLinks = Array.from(document.querySelectorAll<HTMLElement>('.nav__link[data-section]'));
+  const sections = spyLinks
+    .map((l) => document.getElementById(l.dataset.section || ''))
+    .filter((el): el is HTMLElement => el !== null);
+
+  const updateNav = () => {
+    if (nav) nav.classList.toggle('scrolled', window.scrollY > 24);
+
+    if (sections.length) {
+      const offset = 140; // altura aproximada do header flutuante + folga
+      let currentId = sections[0].id;
+      for (const sec of sections) {
+        if (sec.getBoundingClientRect().top <= offset) currentId = sec.id;
+      }
+      spyLinks.forEach((l) => l.classList.toggle('active', l.dataset.section === currentId));
+    }
+  };
+
+  let rafId = 0;
+  const onScroll = () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      rafId = 0;
+      updateNav();
+    });
+  };
+
+  updateNav();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
 
   // ---- Menu mobile (hambúrguer) ----
   const toggle = document.getElementById('nav-toggle');
@@ -121,23 +158,26 @@ const homePath = getLocalizedPath('home', locale);
 <style>
   .nav {
     position: fixed;
-    top: 0;
+    top: 14px;
     left: 0;
     right: 0;
+    margin-inline: auto;
+    width: min(calc(100% - var(--gutter) * 2), var(--container-max));
     z-index: var(--z-header);
-    padding: 18px var(--gutter);
-    display: flex;
+    padding: 11px 14px 11px 22px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    transition: background 0.4s var(--ease), backdrop-filter 0.4s, border-color 0.4s;
-    border-bottom: 1px solid transparent;
+    gap: 16px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.4s var(--ease), border-color 0.4s var(--ease), background 0.4s var(--ease);
   }
-
   .nav.scrolled {
-    background: rgba(250, 251, 253, 0.78);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border-bottom-color: var(--color-border);
+    box-shadow: var(--shadow-md);
+    border-color: var(--color-border-strong);
   }
 
   .nav__brand {
@@ -145,6 +185,7 @@ const homePath = getLocalizedPath('home', locale);
     align-items: center;
     gap: 10px;
     color: var(--color-text);
+    justify-self: start;
   }
   .nav__brand-text {
     display: flex;
@@ -167,42 +208,78 @@ const homePath = getLocalizedPath('home', locale);
 
   .nav__links {
     display: flex;
-    gap: 34px;
+    gap: 30px;
     align-items: center;
+    justify-self: center;
   }
   .nav__link {
+    position: relative;
     font-size: var(--fs-small);
     color: var(--color-text-muted);
     transition: color 0.3s var(--ease);
     font-weight: 400;
+    padding-bottom: 4px;
+  }
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-primary);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform var(--motion-fast) var(--ease);
   }
   .nav__link:hover {
     color: var(--color-text);
+  }
+  .nav__link.active {
+    color: var(--color-text);
+  }
+  .nav__link.active::after {
+    transform: scaleX(1);
   }
 
   .nav__right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 18px;
+    justify-self: end;
   }
 
   .nav__lang {
     display: flex;
+    align-items: center;
     font-family: var(--font-mono);
     font-size: var(--fs-mono);
     letter-spacing: 0.05em;
     color: var(--color-text-dim);
-    gap: 6px;
+    gap: 7px;
   }
   .nav__lang-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     transition: color 0.3s;
     font-weight: 500;
   }
   .nav__lang-link.active {
     color: var(--color-text);
   }
-  .nav__lang span {
+  .nav__lang-link:hover {
+    color: var(--color-text);
+  }
+  .nav__lang-sep {
     color: var(--color-text-faint);
+  }
+  .nav__lang-caret {
+    width: 8px;
+    height: 5px;
+    margin-top: 1px;
+    color: var(--color-text-dim);
   }
 
   .nav__cta {
@@ -346,7 +423,8 @@ const homePath = getLocalizedPath('home', locale);
 
   @media (prefers-reduced-motion: reduce) {
     .nav__mobile,
-    .nav__toggle-bar {
+    .nav__toggle-bar,
+    .nav__link::after {
       transition: none;
     }
   }

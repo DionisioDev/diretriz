@@ -1,5 +1,8 @@
 ---
 import { getContent, type Locale } from '../../lib/i18n';
+import { sectionIcons } from '../../lib/icons';
+import SectionBadge from './SectionBadge.astro';
+import SectionDecor from './SectionDecor.astro';
 
 interface Props {
   locale: Locale;
@@ -9,11 +12,17 @@ const { locale } = Astro.props as Props;
 const c = getContent(locale);
 ---
 
-<section class="section-pad" id="processo" data-screen-label="05 Processo">
+<section class="section-pad process" id="processo" data-screen-label="05 Processo">
+  <SectionDecor variant={4} />
+
   <div class="container">
     <div class="process__head">
-      <div class="section-label reveal reveal-fade">{c.process.label}</div>
-      <h2 class="process__title reveal reveal-up reveal-d1">
+      <SectionBadge
+        label={c.process.label}
+        icon={sectionIcons.process}
+        class="reveal reveal-fade"
+      />
+      <h2 class="section-title process__title reveal reveal-up reveal-d1">
         {c.process.titleStart}<span class="blue">{c.process.titleAccent}</span>
       </h2>
     </div>
@@ -69,20 +78,20 @@ const c = getContent(locale);
 </section>
 
 <style>
+  .process {
+    position: relative;
+    overflow: clip;
+  }
+  .process > .container {
+    position: relative;
+    z-index: 1;
+  }
   .process__head {
     margin-bottom: 56px;
   }
   .process__title {
-    font-size: var(--fs-h2);
-    font-weight: 600;
-    letter-spacing: -0.035em;
-    line-height: 1.05;
     margin: 0;
     max-width: 18ch;
-    text-wrap: balance;
-  }
-  .process__title .blue {
-    color: var(--color-primary);
   }
 
   /* ---------------- Chevrons ---------------- */
@@ -120,7 +129,7 @@ const c = getContent(locale);
   .chevron--3 { background: #C7D8F2; }
   .chevron--4 { background: #A9C2EB; }
   .chevron--5 {
-    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-bright) 100%);
+    background: var(--color-primary);
     color: var(--color-text-on-dark);
   }
 

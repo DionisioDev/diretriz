@@ -1,13 +1,13 @@
 /* Card de formulário claro — portado do design da seção de contato. */
 .form {
   background: #ffffff;
-  border: 1px solid rgba(11, 18, 32, 0.05);
+  border: 1px solid var(--color-border);
   border-radius: 24px;
   padding: clamp(28px, 3vw, 44px);
   display: flex;
   flex-direction: column;
   gap: 22px;
-  box-shadow: 0 30px 70px -34px rgba(20, 38, 78, 0.28);
+  box-shadow: var(--shadow-lg);
 }
 
 .formTitle {
@@ -231,10 +231,10 @@
 /* Card de sucesso — substitui o formulário, mesmo invólucro, celebrativo */
 .success {
   background: #ffffff;
-  border: 1px solid rgba(11, 18, 32, 0.05);
+  border: 1px solid var(--color-border);
   border-radius: 24px;
   padding: clamp(40px, 4vw, 60px) clamp(28px, 3vw, 44px);
-  box-shadow: 0 30px 70px -34px rgba(20, 38, 78, 0.28);
+  box-shadow: var(--shadow-lg);
   display: flex;
   flex-direction: column;
   align-items: center;

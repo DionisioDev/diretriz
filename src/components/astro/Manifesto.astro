@@ -1,5 +1,8 @@
 ---
 import { getContent, type Locale } from '../../lib/i18n';
+import { sectionIcons } from '../../lib/icons';
+import SectionBadge from './SectionBadge.astro';
+import SectionDecor from './SectionDecor.astro';
 
 interface Props {
   locale: Locale;
@@ -10,23 +13,17 @@ const c = getContent(locale);
 ---
 
 <section class="section-pad manifesto" id="sobre" data-screen-label="02 Manifesto">
-  <div class="manifesto__decor" aria-hidden="true">
-    <span class="manifesto__corner manifesto__corner--tl"></span>
-    <span class="manifesto__corner manifesto__corner--br"></span>
-    <span class="manifesto__dots manifesto__dots--tr"></span>
-    <span class="manifesto__dots manifesto__dots--bl"></span>
-  </div>
+  <SectionDecor variant={1} />
 
   <div class="container manifesto__inner">
-    <div class="manifesto__eyebrow reveal reveal-fade">
-      <span class="manifesto__line"></span>
-      <span class="manifesto__dot"></span>
-      <span class="manifesto__eyebrow-text">{c.manifesto.label}</span>
-      <span class="manifesto__dot"></span>
-      <span class="manifesto__line"></span>
-    </div>
+    <SectionBadge
+      label={c.manifesto.label}
+      icon={sectionIcons.about}
+      align="center"
+      class="reveal reveal-fade"
+    />
 
-    <h2 class="manifesto__title reveal reveal-up reveal-d1">
+    <h2 class="section-title manifesto__title reveal reveal-up reveal-d1">
       {c.manifesto.titleStart}<span class="blue">{c.manifesto.titleAccent}</span>
     </h2>
 
@@ -57,51 +54,10 @@ const c = getContent(locale);
     align-items: center;
   }
 
-  /* ---------------- Eyebrow conectado ---------------- */
-  .manifesto__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 34px;
-  }
-  .manifesto__line {
-    width: clamp(40px, 9vw, 130px);
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.7));
-  }
-  .manifesto__line:last-child {
-    background: linear-gradient(90deg, rgba(37, 99, 235, 0.7), transparent);
-  }
-  .manifesto__dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-  }
-  .manifesto__eyebrow-text {
-    font-family: var(--font-mono);
-    font-size: var(--fs-mono);
-    color: var(--color-primary);
-    letter-spacing: 0.22em;
-    font-weight: 600;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
   /* ---------------- Título ---------------- */
   .manifesto__title {
-    font-size: var(--fs-h2);
-    font-weight: 600;
-    line-height: 1.05;
-    letter-spacing: -0.035em;
     max-width: 22ch;
     margin: 0 auto;
-    text-wrap: balance;
-    color: var(--color-text);
-  }
-  .manifesto__title .blue {
-    color: var(--color-primary);
   }
 
   /* ---------------- Divisor de chevrons ---------------- */
@@ -116,12 +72,39 @@ const c = getContent(locale);
     width: 13px;
     height: 15px;
     display: block;
+    animation: chevronFlow 1.6s var(--ease-soft) infinite;
   }
   .manifesto__chevrons svg:nth-child(2) {
-    opacity: 0.78;
+    animation-delay: 0.18s;
   }
   .manifesto__chevrons svg:nth-child(3) {
-    opacity: 0.56;
+    animation-delay: 0.36s;
+  }
+  /* onda suave da esquerda p/ direita — "fluxo" */
+  @keyframes chevronFlow {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: translateX(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .manifesto__chevrons svg {
+      animation: none;
+    }
+    .manifesto__chevrons svg:nth-child(1) {
+      opacity: 1;
+    }
+    .manifesto__chevrons svg:nth-child(2) {
+      opacity: 0.78;
+    }
+    .manifesto__chevrons svg:nth-child(3) {
+      opacity: 0.56;
+    }
   }
 
   /* ---------------- Subtítulo ---------------- */
@@ -141,83 +124,5 @@ const c = getContent(locale);
     height: 2px;
     background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
     border-radius: var(--radius-full);
-  }
-
-  /* ---------------- Decoração de fundo ---------------- */
-  .manifesto__decor {
-    position: absolute;
-    inset: 0;
-    z-index: var(--z-base);
-    pointer-events: none;
-    overflow: clip;
-  }
-
-  /* Glow difuso + anéis concêntricos finos, mascarados para esvanecer
-     suavemente em direção ao centro da seção. */
-  .manifesto__corner {
-    position: absolute;
-    width: clamp(360px, 46vw, 680px);
-    aspect-ratio: 1;
-  }
-  .manifesto__corner--tl {
-    top: 0;
-    left: 0;
-    transform: translate(-32%, -36%);
-    background:
-      radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.22), transparent 62%),
-      repeating-radial-gradient(
-        circle at 50% 50%,
-        transparent 0 108px,
-        rgba(37, 99, 235, 0.06) 108px 109px
-      );
-    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 38%, transparent 72%);
-    mask-image: radial-gradient(circle at 50% 50%, #000 38%, transparent 72%);
-  }
-  .manifesto__corner--br {
-    right: 0;
-    bottom: 0;
-    transform: translate(34%, 38%);
-    background:
-      radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.24), transparent 62%),
-      repeating-radial-gradient(
-        circle at 50% 50%,
-        transparent 0 124px,
-        rgba(37, 99, 235, 0.07) 124px 125px
-      );
-    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 74%);
-    mask-image: radial-gradient(circle at 50% 50%, #000 40%, transparent 74%);
-  }
-
-  /* Grids de pontos nos cantos opostos */
-  .manifesto__dots {
-    position: absolute;
-    width: 132px;
-    height: 108px;
-    background-image: radial-gradient(rgba(37, 99, 235, 0.22) 1.3px, transparent 1.5px);
-    background-size: 17px 17px;
-  }
-  .manifesto__dots--tr {
-    top: 12%;
-    right: 4.5%;
-    -webkit-mask-image: linear-gradient(235deg, #000 25%, transparent 78%);
-    mask-image: linear-gradient(235deg, #000 25%, transparent 78%);
-  }
-  .manifesto__dots--bl {
-    bottom: 14%;
-    left: 3.5%;
-    -webkit-mask-image: linear-gradient(55deg, #000 25%, transparent 78%);
-    mask-image: linear-gradient(55deg, #000 25%, transparent 78%);
-  }
-
-  @media (max-width: 640px) {
-    .manifesto__dots {
-      display: none;
-    }
-    .manifesto__corner {
-      opacity: 0.7;
-    }
-    .manifesto__line {
-      width: clamp(24px, 14vw, 60px);
-    }
   }
 </style>

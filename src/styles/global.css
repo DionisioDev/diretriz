@@ -101,7 +101,6 @@ a {
   background: var(--color-bg-dark);
   color: var(--color-text-on-dark);
 }
-.section-dark .section-label { color: rgba(255, 255, 255, 0.55); }
 .section-dark h2,
 .section-dark h3 { color: #FFFFFF; }
 
@@ -111,27 +110,18 @@ a {
   margin: 0;
 }
 
-.section-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono);
+/* Título de seção — fonte única de verdade (var(--fs-h2)/600).
+   Margens/alinhamento ficam a cargo de cada seção. */
+.section-title {
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  color: var(--color-text);
+  text-wrap: balance;
+}
+.section-title .blue {
   color: var(--color-primary);
-  letter-spacing: 0.08em;
-  margin-bottom: 32px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-.section-label::before {
-  content: '';
-  width: 24px;
-  height: 1px;
-  background: var(--color-primary);
-}
-.section-label.center {
-  display: flex;
-  justify-content: center;
 }
 
 /* ============================================================

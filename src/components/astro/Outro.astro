@@ -1,5 +1,8 @@
 ---
 import { getContent, type Locale } from '../../lib/i18n';
+import { sectionIcons } from '../../lib/icons';
+import SectionBadge from './SectionBadge.astro';
+import SectionDecor from './SectionDecor.astro';
 import ContactForm from '../react/ContactForm/ContactForm';
 
 interface Props {
@@ -23,20 +26,18 @@ const statIcons = [clock, people, bulb, rocket];
 ---
 
 <section class="outro" id="contato" data-screen-label="06 Contato">
-  <div class="outro__decor" aria-hidden="true">
-    <span class="outro__decor-circle"></span>
-    <span class="outro__decor-dots"></span>
-  </div>
+  <SectionDecor variant={3} />
 
   <div class="container outro__inner">
     <div class="outro__main">
       {/* ESQUERDA — headline + diferenciais */}
       <div class="outro__lead">
-        <div class="outro__badge reveal reveal-fade">
-          <span class="outro__badge-icon" set:html={chatDots} />
-          {c.outro.badge}
-        </div>
-        <h2 class="outro__title reveal reveal-up reveal-d1">
+        <SectionBadge
+          label={c.outro.badge}
+          icon={sectionIcons.contact}
+          class="reveal reveal-fade"
+        />
+        <h2 class="section-title outro__title reveal reveal-up reveal-d1">
           {c.outro.titleStart}<span class="blue">{c.outro.titleAccent}</span>{c.outro.titleEnd}
         </h2>
         <p class="outro__sub reveal reveal-up reveal-d2">{c.outro.lede}</p>
@@ -84,43 +85,9 @@ const statIcons = [clock, people, bulb, rocket];
     position: relative;
     padding-top: clamp(72px, 9vw, 120px);
     padding-bottom: clamp(64px, 8vw, 104px);
-    overflow: hidden;
+    overflow: clip;
     background: linear-gradient(180deg, #f4f7fd 0%, #eef3fb 100%);
     border-top: 1px solid var(--color-border);
-  }
-
-  .outro__decor {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .outro__decor-circle {
-    position: absolute;
-    top: 16%;
-    left: 34%;
-    width: 460px;
-    height: 460px;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle at 50% 50%,
-      rgba(96, 165, 250, 0.14),
-      rgba(96, 165, 250, 0.05) 55%,
-      transparent 72%
-    );
-  }
-  .outro__decor-dots {
-    position: absolute;
-    bottom: 30%;
-    left: 1.5%;
-    width: 120px;
-    height: 90px;
-    background-image: radial-gradient(rgba(37, 99, 235, 0.28) 1.4px, transparent 1.6px);
-    background-size: 15px 15px;
-    -webkit-mask-image: linear-gradient(115deg, #000 30%, transparent 80%);
-    mask-image: linear-gradient(115deg, #000 30%, transparent 80%);
-    opacity: 0.7;
   }
 
   .outro__inner {
@@ -139,44 +106,8 @@ const statIcons = [clock, people, bulb, rocket];
   .outro__lead {
     padding-top: 6px;
   }
-  .outro__badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px 8px 13px;
-    border-radius: var(--radius-full);
-    background: #ffffff;
-    border: 1px solid rgba(37, 99, 235, 0.18);
-    box-shadow: 0 4px 14px -8px rgba(37, 99, 235, 0.35);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: var(--color-primary);
-    margin-bottom: 30px;
-  }
-  .outro__badge-icon {
-    display: inline-flex;
-    width: 16px;
-    height: 16px;
-  }
-  .outro__badge-icon :global(svg) {
-    width: 16px;
-    height: 16px;
-  }
-
   .outro__title {
-    font-size: clamp(2rem, 1rem + 3vw, 3.4rem);
-    font-weight: 700;
-    letter-spacing: -0.04em;
-    line-height: 1.04;
     margin: 0 0 22px;
-    color: #0b1220;
-    text-wrap: balance;
-  }
-  .outro__title :global(.blue) {
-    color: var(--color-primary);
   }
 
   .outro__sub {
@@ -231,13 +162,13 @@ const statIcons = [clock, people, bulb, rocket];
   .outro__stats {
     margin-top: clamp(48px, 6vw, 80px);
     background: #ffffff;
-    border: 1px solid rgba(11, 18, 32, 0.05);
+    border: 1px solid var(--color-border);
     border-radius: 22px;
     padding: clamp(26px, 3vw, 40px) clamp(20px, 2.5vw, 36px);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: clamp(20px, 2.5vw, 40px);
-    box-shadow: 0 24px 60px -36px rgba(20, 38, 78, 0.22);
+    box-shadow: var(--shadow-lg);
   }
   .outro__stat {
     display: grid;
