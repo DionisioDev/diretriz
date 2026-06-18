@@ -24,9 +24,13 @@ interface Props {
 interface Msg {
   role: 'user' | 'assistant';
   content: string;
+  time: string;
 }
 
 type Status = 'idle' | 'sending' | 'error';
+
+const fmtTime = (d: Date) =>
+  `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
 /**
  * ChatWidget — assistente flutuante de qualificação de leads.
@@ -37,7 +41,9 @@ type Status = 'idle' | 'sending' | 'error';
  */
 export default function ChatWidget({ strings, locale }: Props) {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([{ role: 'assistant', content: strings.greeting }]);
+  const [messages, setMessages] = useState<Msg[]>(() => [
+    { role: 'assistant', content: strings.greeting, time: fmtTime(new Date()) },
+  ]);
   const [input, setInput] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [leadEmailed, setLeadEmailed] = useState(false);
@@ -74,7 +80,7 @@ export default function ChatWidget({ strings, locale }: Props) {
     const text = input.trim();
     if (!text || status === 'sending') return;
 
-    const next: Msg[] = [...messages, { role: 'user', content: text }];
+    const next: Msg[] = [...messages, { role: 'user', content: text, time: fmtTime(new Date()) }];
     setMessages(next);
     setInput('');
     setStatus('sending');
@@ -88,7 +94,7 @@ export default function ChatWidget({ strings, locale }: Props) {
       if (!res.ok) throw new Error('bad status');
       const data = (await res.json()) as { reply?: string; leadCaptured?: boolean };
       const reply = (data.reply || '').trim();
-      setMessages((m) => [...m, { role: 'assistant', content: reply || strings.error }]);
+      setMessages((m) => [...m, { role: 'assistant', content: reply || strings.error, time: fmtTime(new Date()) }]);
       if (data.leadCaptured && !leadEmailed) {
         setLeadEmailed(true);
         setLeadJustCaptured(true);
@@ -141,8 +147,11 @@ export default function ChatWidget({ strings, locale }: Props) {
       >
         <header className={styles.header}>
           <div className={styles.headerBrand}>
-            <span className={styles.headerDot} aria-hidden="true" />
-            <div>
+            <span className={styles.avatar} aria-hidden="true">
+              <img src="/assets/logo-mark.png" width={20} height={19} alt="" decoding="async" />
+              <span className={styles.avatarDot} />
+            </span>
+            <div className={styles.headerText}>
               <strong className={styles.headerTitle}>{strings.title}</strong>
               <span className={styles.headerSub}>{strings.subtitle}</span>
             </div>
@@ -156,16 +165,34 @@ export default function ChatWidget({ strings, locale }: Props) {
 
         <div className={styles.messages} ref={scrollRef} aria-live="polite">
           {messages.map((m, i) => (
-            <div key={i} className={`${styles.bubble} ${m.role === 'user' ? styles.user : styles.assistant}`}>
-              {m.content}
+            <div
+              key={i}
+              className={`${styles.row} ${m.role === 'user' ? styles.rowUser : styles.rowAssistant}`}
+            >
+              {m.role === 'assistant' && (
+                <span className={styles.msgAvatar} aria-hidden="true">
+                  <img src="/assets/logo-mark.png" width={15} height={14} alt="" decoding="async" />
+                </span>
+              )}
+              <div className={styles.bubbleWrap}>
+                <div className={`${styles.bubble} ${m.role === 'user' ? styles.user : styles.assistant}`}>
+                  {m.content}
+                </div>
+                <span className={styles.time}>{m.time}</span>
+              </div>
             </div>
           ))}
 
           {status === 'sending' && (
-            <div className={`${styles.bubble} ${styles.assistant} ${styles.typing}`} aria-label="…">
-              <span />
-              <span />
-              <span />
+            <div className={`${styles.row} ${styles.rowAssistant}`}>
+              <span className={styles.msgAvatar} aria-hidden="true">
+                <img src="/assets/logo-mark.png" width={15} height={14} alt="" decoding="async" />
+              </span>
+              <div className={`${styles.bubble} ${styles.assistant} ${styles.typing}`} aria-label="…">
+                <span />
+                <span />
+                <span />
+              </div>
             </div>
           )}
 
@@ -205,7 +232,13 @@ export default function ChatWidget({ strings, locale }: Props) {
             </svg>
           </button>
         </div>
-        <p className={styles.disclaimer}>{strings.disclaimer}</p>
+        <div className={styles.disclaimer}>
+          <svg className={styles.sparkle} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M11 2.5 L12.3 7.6 L17.4 8.9 L12.3 10.2 L11 15.3 L9.7 10.2 L4.6 8.9 L9.7 7.6 Z" />
+            <path d="M17.5 13 L18.2 15.6 L20.8 16.3 L18.2 17 L17.5 19.6 L16.8 17 L14.2 16.3 L16.8 15.6 Z" />
+          </svg>
+          <span>{strings.disclaimer}</span>
+        </div>
       </div>
     </div>
   );

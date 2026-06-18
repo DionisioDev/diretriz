@@ -354,9 +354,9 @@ const content: Record<Locale, SiteContent> = {
     langSwitch: { label: 'Idioma' },
     preloader: { brand: 'Diretriz' },
     chat: {
-      launcher: 'Falar com a Diretriz',
+      launcher: 'Vamos trocar uma ideia?',
       title: 'Assistente Diretriz',
-      subtitle: 'Toda boa solução começa com uma conversa.',
+      subtitle: 'Conte seu desafio — a gente aponta o caminho.',
       greeting:
         'Olá! Que desafio trouxe você até aqui? Pode ser um produto pra criar, um processo pra automatizar, ou uma ideia ainda tomando forma. Conta em poucas palavras — a gente entende o contexto e já aponta os próximos passos.',
       placeholder: 'Escreva sua mensagem…',
@@ -560,9 +560,9 @@ const content: Record<Locale, SiteContent> = {
     langSwitch: { label: 'Language' },
     preloader: { brand: 'Diretriz' },
     chat: {
-      launcher: 'Talk to Diretriz',
+      launcher: "Got an idea? Let's chat",
       title: 'Diretriz Assistant',
-      subtitle: 'Every good solution starts with a conversation.',
+      subtitle: "Tell us your challenge — we'll point the way.",
       greeting:
         "Hi there! What challenge brought you here? It could be a product to build, a process to automate, or an idea still taking shape. Tell me in a few words — we'll understand the context and point you to the next steps.",
       placeholder: 'Write your message…',
