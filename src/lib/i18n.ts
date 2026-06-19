@@ -173,8 +173,8 @@ const content: Record<Locale, SiteContent> = {
     },
     hero: {
       kicker: '/ Diretriz Tecnologia',
-      tagline: ['Construímos.', 'Rápido.', 'Sob medida.'],
-      sub: 'Tecnologia que aponta na direção do seu negócio.',
+      tagline: ['tecnologia', 'na direção', 'do seu negócio.'],
+      sub: '',
       ctaPrimary: 'Falar com a Diretriz',
       ctaSecondary: 'Conhecer mais',
     },
@@ -379,8 +379,8 @@ const content: Record<Locale, SiteContent> = {
     },
     hero: {
       kicker: '/ Diretriz Tecnologia',
-      tagline: ['We build.', 'Fast.', 'Tailored.'],
-      sub: 'Technology that points your business in the right direction.',
+      tagline: ['technology', 'in the direction', 'of your business.'],
+      sub: '',
       ctaPrimary: 'Talk to Diretriz',
       ctaSecondary: 'Learn more',
     },

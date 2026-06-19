@@ -17,6 +17,10 @@ html {
   font-size: 16px;
   background: var(--color-bg);
   color: var(--color-text);
+  /* Reserva o espaço da barra de rolagem sempre, mesmo quando ela não está
+     presente. Evita que o conteúdo centralizado "salte" para a esquerda
+     quando a barra aparece (ex.: ao liberar o scroll após o preloader). */
+  scrollbar-gutter: stable;
 }
 
 /* Âncoras (#sobre, #servicos, …) não ficam escondidas atrás do header fixo.

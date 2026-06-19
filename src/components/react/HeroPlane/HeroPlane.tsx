@@ -40,14 +40,26 @@ export default function HeroPlane({ onLanded }: Props) {
     let raf = 0;
     let W = 0;
     let H = 0;
+    let Wc = 0; // largura do container central (grid .hero__inner = offsetParent do .planeBg). Referência centralizada do texto.
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
+    let lastBufW = 0;
+    let lastBufH = 0;
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
       W = rect.width;
       H = rect.height;
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
+      const containerEl = canvas.parentElement?.offsetParent as HTMLElement | null;
+      Wc = containerEl ? containerEl.getBoundingClientRect().width : Math.min(W, 1480);
+      const bufW = Math.round(W * dpr);
+      const bufH = Math.round(H * dpr);
+      // resize() roda a cada frame (dentro do draw): só reseta o buffer quando
+      // ele realmente muda de tamanho — setar canvas.width/height limpa o canvas.
+      if (bufW === lastBufW && bufH === lastBufH) return;
+      lastBufW = bufW;
+      lastBufH = bufH;
+      canvas.width = bufW;
+      canvas.height = bufH;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
@@ -55,11 +67,22 @@ export default function HeroPlane({ onLanded }: Props) {
       typeof window !== 'undefined' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let staticRedraw: (() => void) | null = null;
-    const ro = new ResizeObserver(() => {
-      resize();
-      staticRedraw?.();
-    });
-    ro.observe(canvas);
+    // Re-âncora apenas em resize REAL da janela. A geometria de descanso fica
+    // congelada após o pouso (para a escrita não empurrar o avião); aqui, num
+    // resize de verdade, recalculamos a posição/escala para a nova dimensão.
+    let resizeRaf = 0;
+    const onResize = () => {
+      cancelAnimationFrame(resizeRaf);
+      resizeRaf = requestAnimationFrame(() => {
+        resize();
+        if (landedFired) {
+          restFinal = getFinal();
+          restScale = planeScaleVal();
+        }
+        staticRedraw?.();
+      });
+    };
+    window.addEventListener('resize', onResize);
 
     // Carrega o sprite da logo (sem bloquear render)
     const planeImg = new Image();
@@ -103,11 +126,22 @@ export default function HeroPlane({ onLanded }: Props) {
     const FADE_IN_DURATION = 700;
     const startTime = performance.now();
     let landedFired = false;
+    let restFinal: { x: number; y: number; angle: number } | null = null;
+    let restScale = 0;
 
     const getStart = () => ({ x: -W * 0.18, y: H * 0.85, angle: -0.55 });
     const getControl = () => ({ x: W * 0.3, y: H * 0.2 });
-    const getFinal = () => ({ x: W * 0.78, y: H * 0.5, angle: -0.22 });
-    const planeScaleVal = () => Math.min(W, H) / 360;
+    // Posição de descanso ancorada ao CONTAINER (onde o texto vive), não à
+    // viewport: avião a PLANE_ANCHOR da largura do container, recentrado na
+    // tela. A folga até a borda da viewport (canvas full-bleed) é a pista de
+    // pouso da asa. Como texto e avião compartilham o mesmo container
+    // centralizado, a distância entre eles é constante e o conjunto fica
+    // equilibrado em qualquer tela.
+    // PLANE_ANCHOR: ↑ move o avião p/ a direita (mais perto da borda, margem
+    // direita menor / mais simétrica); ↓ move p/ a esquerda (mais perto do texto).
+    const PLANE_ANCHOR = 0.84;
+    const getFinal = () => ({ x: (W - Wc) / 2 + Wc * PLANE_ANCHOR, y: H * 0.5, angle: -0.22 });
+    const planeScaleVal = () => Math.min(W, H) / 330;
 
     const bezX = (
       t: number,
@@ -123,6 +157,12 @@ export default function HeroPlane({ onLanded }: Props) {
     ) => (1 - t) * (1 - t) * s.y + 2 * (1 - t) * t * c.y + t * t * e.y;
 
     const draw = (now: number) => {
+      // Re-sincroniza o buffer do canvas DENTRO do frame: se o tamanho de
+      // exibição mudou (fonte carregando, layout assentando), atualiza o
+      // buffer e segue desenhando no mesmo frame — sem frame em branco
+      // (piscada) e sem buffer esticado (distorção).
+      resize();
+
       const elapsed = now - startTime;
       const flightT = Math.min(1, elapsed / FLIGHT_DURATION);
       const easedT = easeOutQuint(flightT);
@@ -131,21 +171,33 @@ export default function HeroPlane({ onLanded }: Props) {
 
       const start = getStart();
       const control = getControl();
-      const final = getFinal();
 
       if (!landedFired && flightT >= 1) {
         landedFired = true;
+        // Congela a geometria de descanso no pouso. Daqui em diante o avião
+        // ignora mudanças de tamanho do canvas — não é mais "empurrado" nem
+        // reescalado pela escrita/reflow do layout.
+        restFinal = getFinal();
+        restScale = planeScaleVal();
         if (onLandedRef.current) onLandedRef.current();
       }
+
+      const final = restFinal ?? getFinal();
+      const scale = restFinal ? restScale : planeScaleVal();
 
       let idleX = 0;
       let idleY = 0;
       let idleA = 0;
       if (flightT >= 1) {
         const idleT = (elapsed - FLIGHT_DURATION) / 1000;
-        idleX = Math.sin(idleT * 0.4) * 8;
-        idleY = Math.sin(idleT * 0.55 + 1.2) * 10;
-        idleA = Math.sin(idleT * 0.5) * 0.035;
+        // Envelope suave: o flutuar idle cresce de 0→1 ao longo de ~1.1s.
+        // Sem isso, idleY saltaria de 0 para ~9px no instante do pouso
+        // (o "corte"/parada brusca). Com o envelope o avião assenta fluido.
+        const r = Math.min(1, idleT / 1.1);
+        const env = r * r * (3 - 2 * r); // smoothstep
+        idleX = Math.sin(idleT * 0.4) * 8 * env;
+        idleY = Math.sin(idleT * 0.55 + 1.2) * 10 * env;
+        idleA = Math.sin(idleT * 0.5) * 0.035 * env;
       }
 
       const planeX = bezX(easedT, start, control, final) + idleX;
@@ -158,7 +210,6 @@ export default function HeroPlane({ onLanded }: Props) {
       // smoothstep para blend suave entre ângulo de voo e ângulo de descanso
       const ss = easedT * easedT * (3 - 2 * easedT);
       const planeAngle = flightAngle * (1 - ss) + (final.angle + idleA) * ss;
-      const scale = planeScaleVal();
 
       if (flightT < 1) {
         // Trail durante voo: sombras amostrando a curva em tempos anteriores
@@ -253,7 +304,8 @@ export default function HeroPlane({ onLanded }: Props) {
 
     return () => {
       cancelAnimationFrame(raf);
-      ro.disconnect();
+      cancelAnimationFrame(resizeRaf);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 

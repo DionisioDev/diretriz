@@ -1,6 +1,16 @@
 .planeBg {
   position: absolute;
-  inset: 0;
+  /* Full-bleed: o canvas do avião ocupa a largura inteira da viewport (não só
+     o container), dando ao avião a margem direita como espaço de pouso — sem
+     disputar espaço com o texto nem cortar na borda do container.
+     left:50% + margin-left:-50vw centra os 100vw no centro do grid (= centro
+     da viewport, pois o container é centralizado). top/bottom:0 mantêm a
+     altura igual à do grid, preservando a centralização vertical com o texto. */
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  margin-left: -50vw;
   z-index: 1;
   pointer-events: none;
 }
@@ -13,6 +23,11 @@
 .copy {
   position: relative;
   z-index: 2;
+
+  /* === Espaçamentos do hero — ajuste livre para testar === */
+  --hero-kicker-gap: 52px; /* kicker → título */
+  --hero-cta-gap: 100px;    /* título → botões */
+  --hero-btn-gap: 30px;    /* entre os dois botões */
 }
 
 .kicker {
@@ -23,7 +38,7 @@
   font-size: var(--fs-mono);
   color: var(--color-primary);
   letter-spacing: 0.08em;
-  margin-bottom: 32px;
+  margin-bottom: var(--hero-kicker-gap);
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -39,9 +54,9 @@
   font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.05em;
-  margin: 0 0 28px 0;
+  margin: 0 0 var(--hero-cta-gap) 0;
   text-wrap: balance;
-  min-height: 4.2em; /* evita layout jump enquanto digita */
+  min-height: 3em; /* reserva exata das 3 linhas (cada .line já tem min-height: 1em) — evita layout jump sem sobrar espaço morto */
 }
 
 .line {
@@ -64,6 +79,40 @@
 
 .ctas {
   display: flex;
-  gap: 12px;
+  gap: var(--hero-btn-gap);
   flex-wrap: wrap;
+}
+
+/* ============================================================
+   Mobile — avião em "palco" próprio no topo + CTAs full-width
+   ============================================================ */
+@media (max-width: 980px) {
+  /* O canvas do avião deixa de ser full-bleed atrás do texto e passa a ocupar
+     um bloco em fluxo no topo do hero — seu próprio palco. O texto flui logo
+     abaixo, sem sobreposição. A animação do avião não muda: ele voa e pousa
+     dentro deste palco, cuja dimensão o canvas mede via getBoundingClientRect. */
+  .planeBg {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    margin-left: 0;
+    height: clamp(250px, 40vh, 320px);
+  }
+}
+
+@media (max-width: 600px) {
+  /* Subtítulo um degrau maior no celular (acompanha o bump da escala). */
+  .sub {
+    font-size: 1.0625rem;
+  }
+  /* Botões empilhados ocupando a largura total, como no design mobile. */
+  .ctas {
+    flex-direction: column;
+  }
+  .ctas :global(.btn) {
+    width: 100%;
+    justify-content: center;
+  }
 }
