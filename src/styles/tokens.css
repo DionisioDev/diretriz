@@ -98,6 +98,23 @@
   --z-toast: 2000;
 }
 
+/* ========================================================================
+   Escala tipográfica — mobile (≤600px)
+   No celular as fontes sobem um degrau: títulos maiores (alinhados ao design
+   mobile) e texto de leitura um pouco maior. O desktop não muda — este bloco
+   só sobrescreve a ponta-baixa da escala, abaixo do ponto em que o layout já
+   vira coluna única. Os títulos crescem com a largura (vw) e têm teto, então
+   não estouram nem em telas pequenas (≤360px ficam no piso atual).
+   ======================================================================== */
+@media (max-width: 600px) {
+  :root {
+    --fs-display: clamp(2.5rem, 11.5vw, 3.125rem); /* 40 → cresce até 50px */
+    --fs-h2: clamp(1.875rem, 8vw, 2.375rem);       /* 30 → cresce até 38px */
+    --fs-body: 1.0625rem;                          /* 16 → 17px */
+    --fs-small: 0.9375rem;                         /* 14 → 15px */
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
     --motion-instant: 0ms;

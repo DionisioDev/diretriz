@@ -82,3 +82,37 @@
   gap: var(--hero-btn-gap);
   flex-wrap: wrap;
 }
+
+/* ============================================================
+   Mobile — avião em "palco" próprio no topo + CTAs full-width
+   ============================================================ */
+@media (max-width: 980px) {
+  /* O canvas do avião deixa de ser full-bleed atrás do texto e passa a ocupar
+     um bloco em fluxo no topo do hero — seu próprio palco. O texto flui logo
+     abaixo, sem sobreposição. A animação do avião não muda: ele voa e pousa
+     dentro deste palco, cuja dimensão o canvas mede via getBoundingClientRect. */
+  .planeBg {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    width: 100%;
+    margin-left: 0;
+    height: clamp(250px, 40vh, 320px);
+  }
+}
+
+@media (max-width: 600px) {
+  /* Subtítulo um degrau maior no celular (acompanha o bump da escala). */
+  .sub {
+    font-size: 1.0625rem;
+  }
+  /* Botões empilhados ocupando a largura total, como no design mobile. */
+  .ctas {
+    flex-direction: column;
+  }
+  .ctas :global(.btn) {
+    width: 100%;
+    justify-content: center;
+  }
+}
