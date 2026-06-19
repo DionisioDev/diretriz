@@ -1,0 +1,103 @@
+---
+/* Decoração de fundo padrão das seções — glow radial suave + grid de pontos,
+   no mesmo estilo da seção de contato. A `variant` só muda o posicionamento
+   para não ficar idêntico em todas as seções; o estilo é o mesmo.
+   Requer que a seção pai tenha position: relative e overflow: clip,
+   e que o conteúdo fique em z-index acima. */
+interface Props {
+  variant?: 1 | 2 | 3 | 4;
+}
+const { variant = 1 } = Astro.props as Props;
+---
+
+<div class:list={['section-decor', `section-decor--${variant}`]} aria-hidden="true">
+  <span class="section-decor__glow"></span>
+  <span class="section-decor__dots"></span>
+</div>
+
+<style>
+  .section-decor {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: clip;
+  }
+  .section-decor__glow {
+    position: absolute;
+    width: clamp(360px, 40vw, 520px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(96, 165, 250, 0.16),
+      rgba(96, 165, 250, 0.05) 55%,
+      transparent 72%
+    );
+  }
+  .section-decor__dots {
+    position: absolute;
+    width: 132px;
+    height: 100px;
+    background-image: radial-gradient(rgba(37, 99, 235, 0.24) 1.4px, transparent 1.6px);
+    background-size: 16px 16px;
+    opacity: 0.7;
+  }
+
+  /* Variante 1 — glow sup. esquerdo, dots inf. direito */
+  .section-decor--1 .section-decor__glow {
+    top: -14%;
+    left: -8%;
+  }
+  .section-decor--1 .section-decor__dots {
+    bottom: 12%;
+    right: 4%;
+    -webkit-mask-image: linear-gradient(235deg, #000 25%, transparent 80%);
+    mask-image: linear-gradient(235deg, #000 25%, transparent 80%);
+  }
+
+  /* Variante 2 — glow inf. direito, dots sup. esquerdo */
+  .section-decor--2 .section-decor__glow {
+    bottom: -16%;
+    right: -8%;
+  }
+  .section-decor--2 .section-decor__dots {
+    top: 14%;
+    left: 3.5%;
+    -webkit-mask-image: linear-gradient(55deg, #000 25%, transparent 80%);
+    mask-image: linear-gradient(55deg, #000 25%, transparent 80%);
+  }
+
+  /* Variante 3 — glow direito ao centro, dots inf. esquerdo */
+  .section-decor--3 .section-decor__glow {
+    top: 18%;
+    right: -12%;
+  }
+  .section-decor--3 .section-decor__dots {
+    bottom: 14%;
+    left: 3.5%;
+    -webkit-mask-image: linear-gradient(55deg, #000 25%, transparent 80%);
+    mask-image: linear-gradient(55deg, #000 25%, transparent 80%);
+  }
+
+  /* Variante 4 — glow esquerdo ao centro, dots sup. direito */
+  .section-decor--4 .section-decor__glow {
+    bottom: 14%;
+    left: -12%;
+  }
+  .section-decor--4 .section-decor__dots {
+    top: 12%;
+    right: 4%;
+    -webkit-mask-image: linear-gradient(235deg, #000 25%, transparent 80%);
+    mask-image: linear-gradient(235deg, #000 25%, transparent 80%);
+  }
+
+  @media (max-width: 640px) {
+    .section-decor__dots {
+      display: none;
+    }
+    .section-decor__glow {
+      width: clamp(220px, 70vw, 360px);
+    }
+  }
+</style>

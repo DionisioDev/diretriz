@@ -1,5 +1,8 @@
 ---
 import { getContent, type Locale } from '../../lib/i18n';
+import { sectionIcons } from '../../lib/icons';
+import SectionBadge from './SectionBadge.astro';
+import SectionDecor from './SectionDecor.astro';
 
 interface Props {
   locale: Locale;
@@ -10,34 +13,116 @@ const c = getContent(locale);
 ---
 
 <section class="section-pad manifesto" id="sobre" data-screen-label="02 Manifesto">
-  <div class="container">
-    <div class="section-label center reveal reveal-fade">{c.manifesto.label}</div>
-    <p class="manifesto__text">
-      <span class="reveal reveal-clip">{c.manifesto.lineA}</span>
-      <br />
-      <span class="blue reveal reveal-clip reveal-d1">{c.manifesto.lineB}</span>
-    </p>
+  <SectionDecor variant={1} />
+
+  <div class="container manifesto__inner">
+    <SectionBadge
+      label={c.manifesto.label}
+      icon={sectionIcons.about}
+      align="center"
+      class="reveal reveal-fade"
+    />
+
+    <h2 class="section-title manifesto__title reveal reveal-up reveal-d1">
+      {c.manifesto.titleStart}<span class="blue">{c.manifesto.titleAccent}</span>
+    </h2>
+
+    <div class="manifesto__chevrons reveal reveal-fade reveal-d2" aria-hidden="true">
+      <svg viewBox="0 0 12 14" fill="currentColor"><path d="M0 0 L12 7 L0 14 Z" /></svg>
+      <svg viewBox="0 0 12 14" fill="currentColor"><path d="M0 0 L12 7 L0 14 Z" /></svg>
+      <svg viewBox="0 0 12 14" fill="currentColor"><path d="M0 0 L12 7 L0 14 Z" /></svg>
+    </div>
+
+    <p class="manifesto__subtitle reveal reveal-up reveal-d3">{c.manifesto.subtitle}</p>
+
+    <span class="manifesto__rule reveal reveal-fade reveal-d4" aria-hidden="true"></span>
   </div>
 </section>
 
 <style>
   .manifesto {
+    position: relative;
+    overflow: clip;
     text-align: center;
   }
-  .manifesto :global(.section-label) {
-    margin-left: auto;
-    margin-right: auto;
+
+  .manifesto__inner {
+    position: relative;
+    z-index: var(--z-content);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  .manifesto__text {
-    font-size: clamp(1.75rem, 1rem + 3vw, 3.75rem);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.035em;
+
+  /* ---------------- Título ---------------- */
+  .manifesto__title {
     max-width: 22ch;
     margin: 0 auto;
+  }
+
+  /* ---------------- Divisor de chevrons ---------------- */
+  .manifesto__chevrons {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 30px;
+    color: var(--color-primary);
+  }
+  .manifesto__chevrons svg {
+    width: 13px;
+    height: 15px;
+    display: block;
+    animation: chevronFlow 1.6s var(--ease-soft) infinite;
+  }
+  .manifesto__chevrons svg:nth-child(2) {
+    animation-delay: 0.18s;
+  }
+  .manifesto__chevrons svg:nth-child(3) {
+    animation-delay: 0.36s;
+  }
+  /* onda suave da esquerda p/ direita — "fluxo" */
+  @keyframes chevronFlow {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: translateX(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(2px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .manifesto__chevrons svg {
+      animation: none;
+    }
+    .manifesto__chevrons svg:nth-child(1) {
+      opacity: 1;
+    }
+    .manifesto__chevrons svg:nth-child(2) {
+      opacity: 0.78;
+    }
+    .manifesto__chevrons svg:nth-child(3) {
+      opacity: 0.56;
+    }
+  }
+
+  /* ---------------- Subtítulo ---------------- */
+  .manifesto__subtitle {
+    margin: 24px auto 0;
+    max-width: 36ch;
+    font-size: clamp(1.0625rem, 0.95rem + 0.5vw, 1.25rem);
+    line-height: 1.55;
+    color: var(--color-text-muted);
     text-wrap: balance;
   }
-  .manifesto__text :global(.blue) {
-    color: var(--color-primary);
+
+  /* ---------------- Régua gradiente ---------------- */
+  .manifesto__rule {
+    margin-top: 46px;
+    width: clamp(96px, 14vw, 180px);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+    border-radius: var(--radius-full);
   }
 </style>

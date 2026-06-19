@@ -32,3 +32,6 @@ Thumbs.db
 
 # Claude Code (configuração local de IA, não é código do projeto)
 .claude/
+
+# Rascunhos / referências de design (não fazem parte do site)
+.tmp/

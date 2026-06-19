@@ -1,0 +1,54 @@
+---
+/* Badge (eyebrow) padrão de todas as seções — pill branca com ícone.
+   Fonte única de verdade do rótulo, baseada na seção de contato. */
+interface Props {
+  label: string;
+  icon: string; // SVG inline (currentColor)
+  align?: 'start' | 'center';
+  class?: string; // classes extras (ex.: reveal)
+}
+const { label, icon, align = 'start', class: extra = '' } = Astro.props as Props;
+---
+
+<div class:list={['section-badge', `section-badge--${align}`, extra]}>
+  <span class="section-badge__icon" set:html={icon} />
+  <span class="section-badge__text">{label}</span>
+</div>
+
+<style>
+  .section-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px 8px 13px;
+    border-radius: var(--radius-full);
+    background: #ffffff;
+    border: 1px solid rgba(37, 99, 235, 0.18);
+    box-shadow: 0 4px 14px -8px rgba(37, 99, 235, 0.35);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    margin-bottom: 26px;
+  }
+  .section-badge--center {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .section-badge__icon {
+    display: inline-flex;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+  .section-badge__icon :global(svg) {
+    width: 16px;
+    height: 16px;
+    display: block;
+  }
+  .section-badge__text {
+    line-height: 1;
+  }
+</style>

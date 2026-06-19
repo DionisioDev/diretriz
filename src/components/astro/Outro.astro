@@ -1,6 +1,8 @@
 ---
 import { getContent, type Locale } from '../../lib/i18n';
-import OutroPlane from '../react/OutroPlane/OutroPlane';
+import { sectionIcons } from '../../lib/icons';
+import SectionBadge from './SectionBadge.astro';
+import SectionDecor from './SectionDecor.astro';
 import ContactForm from '../react/ContactForm/ContactForm';
 
 interface Props {
@@ -9,98 +11,83 @@ interface Props {
 
 const { locale } = Astro.props as Props;
 const c = getContent(locale);
+
+// Ícones inline (stroke = currentColor) — indexados na ordem de features/stats.
+const chatDots = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a7.5 7.5 0 0 1-10.9 6.7L4 20l1.8-5.1A7.5 7.5 0 1 1 21 11.5z"/><circle cx="8.5" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>`;
+const targetArrow = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 5l-7 7"/><path d="M15 5h4v4"/><path d="M21 12a9 9 0 1 1-5-8"/><circle cx="12" cy="12" r="3.5"/></svg>`;
+const shield = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>`;
+const clock = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>`;
+const people = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5"/><path d="M16 6.2A3 3 0 0 1 18 12"/><path d="M17 14.7c2.5.4 4 2.5 4 5.3"/></svg>`;
+const bulb = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 1 4 10.5c-.7.6-1 1.2-1 2.5H9c0-1.3-.3-1.9-1-2.5A6 6 0 0 1 12 3z"/></svg>`;
+const rocket = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15c-1 1-1.5 4-1.5 4s3-.5 4-1.5"/><path d="M9 14.5C9 9 12 4.5 19 4c-.5 7-5 10-10.5 10z"/><path d="M9 14.5L9.5 18M9.5 15.5L6 15"/><circle cx="14.5" cy="9" r="1.5"/></svg>`;
+
+const featureIcons = [chatDots, targetArrow, shield];
+const statIcons = [clock, people, bulb, rocket];
 ---
 
-<section class="outro section-dark" id="contato" data-screen-label="06 Contato">
-  <div class="outro__plane-bg" aria-hidden="true">
-    <OutroPlane client:visible />
-  </div>
+<section class="outro" id="contato" data-screen-label="06 Contato">
+  <SectionDecor variant={3} />
 
   <div class="container outro__inner">
-    <div class="outro__head">
-      <div class="section-label reveal reveal-fade">{c.outro.label}</div>
-      <h2 class="outro__title reveal reveal-clip reveal-d1">
-        {c.outro.titleStart}<span class="blue">{c.outro.titleAccent}</span>{c.outro.titleEnd}
-      </h2>
-      <p class="outro__lede reveal reveal-up reveal-d2">{c.outro.lede}</p>
-    </div>
+    <div class="outro__main">
+      {/* ESQUERDA — headline + diferenciais */}
+      <div class="outro__lead">
+        <SectionBadge
+          label={c.outro.badge}
+          icon={sectionIcons.contact}
+          class="reveal reveal-fade"
+        />
+        <h2 class="section-title outro__title reveal reveal-up reveal-d1">
+          {c.outro.titleStart}<span class="blue">{c.outro.titleAccent}</span>{c.outro.titleEnd}
+        </h2>
+        <p class="outro__sub reveal reveal-up reveal-d2">{c.outro.lede}</p>
 
-    <div class="outro__grid">
-      <aside class="outro__info reveal reveal-up reveal-d2">
-        {c.outro.info.map((row) => (
-          <div class="outro__info-row">
-            <div class="outro__info-label">{row.label}</div>
-            {row.href ? (
-              <a class="outro__info-value" href={row.href}>
-                {row.pulse && <span class="outro__pulse" />}
-                {row.value}
-              </a>
-            ) : (
-              <div class="outro__info-value">
-                {row.pulse && <span class="outro__pulse" />}
-                {row.value}
+        <div class="outro__features">
+          {c.outro.features.map((f, i) => (
+            <div class={`outro__feature reveal reveal-up reveal-d${i + 2}`}>
+              <span class="outro__feature-icon" set:html={featureIcons[i]} />
+              <div>
+                <h3 class="outro__feature-title">{f.title}</h3>
+                <p class="outro__feature-desc">{f.desc}</p>
               </div>
-            )}
-          </div>
-        ))}
-
-        <div class="outro__social">
-          {c.outro.socials.map((s) => (
-            <a href={s.href} aria-label={s.label} class="outro__social-link">
-              {s.label === 'LinkedIn' ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M4 4h4v4H4zM4 10h4v10H4zM10 10h4v2c.6-1.4 2.2-2.4 4-2.4 3 0 4 2 4 5V20h-4v-5c0-1.5-.5-2.5-2-2.5s-2 1-2 2.5V20h-4z" />
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-                  <rect x="3" y="3" width="18" height="18" rx="5" />
-                  <circle cx="12" cy="12" r="4" />
-                  <circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" />
-                </svg>
-              )}
-              {s.label}
-            </a>
+            </div>
           ))}
         </div>
-      </aside>
+      </div>
 
-      <div class="outro__form-wrap reveal reveal-up reveal-d3">
-        <ContactForm client:visible strings={c.outro.form} />
+      {/* DIREITA — card do formulário */}
+      <div class="outro__form-wrap reveal reveal-up reveal-d2">
+        <ContactForm client:visible strings={c.outro.form} locale={locale} />
       </div>
     </div>
+
+    {/* Faixa de números/garantias */}
+    <div class="outro__stats reveal reveal-up reveal-d2">
+      {c.outro.stats.map((s, i) => (
+        <div class="outro__stat">
+          <span class="outro__stat-icon" set:html={statIcons[i]} />
+          <div>
+            <h4 class="outro__stat-title">{s.title}</h4>
+            <p class="outro__stat-desc">{s.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <p class="outro__closing reveal reveal-fade">
+      {c.outro.closingStart}<span class="blue">{c.outro.closingAccent}</span>
+    </p>
   </div>
 </section>
 
 <style>
   .outro {
     position: relative;
-    padding-top: clamp(80px, 10vw, 140px);
-    padding-bottom: clamp(80px, 10vw, 140px);
-    overflow: hidden;
-  }
-
-  .outro__plane-bg {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.5;
-  }
-  .outro__plane-bg::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at 80% 10%, rgba(37, 99, 235, 0.45), transparent 55%),
-      radial-gradient(ellipse at 10% 90%, rgba(96, 165, 250, 0.30), transparent 60%);
-  }
-  .outro__plane-bg > :global(canvas) {
-    position: absolute;
-    right: -8%;
-    bottom: -10%;
-    width: 480px !important;
-    height: 480px !important;
-    opacity: 0.18;
-    filter: blur(0.5px);
+    padding-top: clamp(72px, 9vw, 120px);
+    padding-bottom: clamp(64px, 8vw, 104px);
+    overflow: clip;
+    background: linear-gradient(180deg, #f4f7fd 0%, #eef3fb 100%);
+    border-top: 1px solid var(--color-border);
   }
 
   .outro__inner {
@@ -108,124 +95,161 @@ const c = getContent(locale);
     z-index: 1;
   }
 
-  .outro__head {
-    max-width: 760px;
-    margin-bottom: clamp(48px, 6vw, 80px);
-  }
-
-  .outro__title {
-    font-size: clamp(2rem, 1rem + 3.2vw, 3.5rem);
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    line-height: 1.05;
-    margin: 16px 0 24px 0;
-    text-wrap: balance;
-  }
-  .outro__title :global(.blue) {
-    color: #60A5FA;
-  }
-
-  .outro__lede {
-    font-size: 1.0625rem;
-    color: rgba(229, 235, 245, 0.72);
-    max-width: 56ch;
-    line-height: 1.55;
-    margin: 0;
-    text-wrap: pretty;
-  }
-
-  .outro__grid {
+  .outro__main {
     display: grid;
-    grid-template-columns: 0.85fr 1.15fr;
-    gap: clamp(32px, 5vw, 72px);
+    grid-template-columns: 1fr 1.08fr;
+    gap: clamp(36px, 5vw, 88px);
     align-items: start;
   }
 
-  .outro__info {
+  /* ESQUERDA */
+  .outro__lead {
+    padding-top: 6px;
+  }
+  .outro__title {
+    margin: 0 0 22px;
+  }
+
+  .outro__sub {
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    line-height: 1.65;
+    margin: 0 0 40px;
+    max-width: 34ch;
+  }
+
+  .outro__features {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 32px;
-    border-radius: var(--radius-2xl);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--color-border-on-dark);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    gap: 30px;
   }
-
-  .outro__info-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  .outro__feature {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 22px;
+    align-items: flex-start;
   }
-  .outro__info-row:last-of-type {
-    border-bottom: none;
-    padding-bottom: 0;
+  .outro__feature-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    background: #e5edfb;
+    color: var(--color-primary);
+    flex-shrink: 0;
   }
-
-  .outro__info-label {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: rgba(229, 235, 245, 0.5);
+  .outro__feature-icon :global(svg) {
+    width: 26px;
+    height: 26px;
   }
-
-  .outro__info-value {
+  .outro__feature-title {
+    margin: 4px 0 6px;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: #0b1220;
+    letter-spacing: -0.01em;
+  }
+  .outro__feature-desc {
+    margin: 0;
     font-size: 0.9375rem;
-    color: #E5EBF5;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    line-height: 1.55;
+    color: #6b7588;
+    max-width: 32ch;
   }
 
-  a.outro__info-value:hover {
-    color: #60A5FA;
+  /* Faixa de stats */
+  .outro__stats {
+    margin-top: clamp(48px, 6vw, 80px);
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 22px;
+    padding: clamp(26px, 3vw, 40px) clamp(20px, 2.5vw, 36px);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(20px, 2.5vw, 40px);
+    box-shadow: var(--shadow-lg);
   }
-
-  .outro__pulse {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
+  .outro__stat {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 16px;
+    align-items: flex-start;
+    position: relative;
+  }
+  .outro__stat:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    right: clamp(-20px, -1.25vw, -10px);
+    width: 1px;
+    background: rgba(11, 18, 32, 0.08);
+  }
+  .outro__stat-icon {
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #34D399;
-    box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
-    animation: outro-pulse 2s ease-out infinite;
+    display: grid;
+    place-items: center;
+    background: #e5edfb;
+    color: var(--color-primary);
+    flex-shrink: 0;
   }
-  @keyframes outro-pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.5); }
-    70%  { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+  .outro__stat-icon :global(svg) {
+    width: 22px;
+    height: 22px;
   }
-
-  .outro__social {
-    display: flex;
-    gap: 10px;
-    margin-top: 8px;
+  .outro__stat-title {
+    margin: 2px 0 5px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0b1220;
+    letter-spacing: -0.005em;
   }
-
-  .outro__social-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    border-radius: var(--radius-full);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    font-size: 0.875rem;
-    color: rgba(229, 235, 245, 0.85);
-    transition: all 0.2s var(--ease);
-  }
-  .outro__social-link:hover {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.25);
-    color: #FFFFFF;
+  .outro__stat-desc {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: #7a8396;
+    max-width: 24ch;
   }
 
-  @media (max-width: 880px) {
-    .outro__grid {
+  .outro__closing {
+    margin: clamp(40px, 5vw, 64px) 0 0;
+    text-align: center;
+    font-size: clamp(1.0625rem, 0.9rem + 0.6vw, 1.375rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+    color: #5a647a;
+  }
+  .outro__closing :global(.blue) {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+
+  @media (max-width: 980px) {
+    .outro__main {
       grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .outro__form-wrap {
+      max-width: 600px;
+    }
+    .outro__stats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px 32px;
+    }
+    .outro__stat:nth-child(2)::after {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    .outro__stats {
+      grid-template-columns: 1fr;
+    }
+    .outro__stat::after {
+      display: none !important;
     }
   }
 </style>
