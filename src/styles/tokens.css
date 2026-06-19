@@ -36,7 +36,7 @@
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --font-display: var(--font-sans);
 
-  --fs-display: clamp(2.75rem, 0.8rem + 7.2vw, 8.5rem);
+  --fs-display: clamp(2.5rem, 0.5rem + 5vw, 6.25rem);
   --fs-h1: clamp(2.5rem, 1.2rem + 4.5vw, 6rem);
   --fs-h2: clamp(1.75rem, 1rem + 2.5vw, 3rem);
   --fs-body: clamp(1rem, 0.95rem + 0.2vw, 1.125rem);

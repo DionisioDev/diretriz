@@ -82,7 +82,7 @@ export default function HeroIntro({
           </span>
         </h1>
 
-        <p className={`${styles.sub} fade-in${step >= 4 ? ' is-in' : ''}`}>{sub}</p>
+        {sub && <p className={`${styles.sub} fade-in${step >= 4 ? ' is-in' : ''}`}>{sub}</p>}
 
         <div className={`${styles.ctas} fade-in fade-d1${step >= 4 ? ' is-in' : ''}`}>
           <a href={contactHref} className="btn btn--primary">
