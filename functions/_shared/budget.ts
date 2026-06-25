@@ -5,28 +5,25 @@
  *   - Workers AI: 10.000 neurons/dia grátis. Acumulamos uma estimativa de neurons
  *     por dia (UTC) em KV; ao passar de DAILY_NEURON_BUDGET, o chat para de chamar
  *     a IA e cai no fallback (pede e-mail).
- *   - Resend: 100 e-mails/dia grátis. Limitamos o envio de leads a DAILY_EMAIL_CAP.
  *
  * O estado é global (entre todas as requisições), então EXIGE KV (`CHAT_RL`).
  * Sem KV — ex.: `wrangler pages dev` sem `--kv` — o freio não é imposto (permite),
  * e falhas de KV degradam para "permitir" (não derrubam o chat).
  */
-import { REPLY_MODEL, EXTRACT_MODEL } from './chat-ai';
+import { REPLY_MODEL } from './chat-ai';
 import type { KvNamespace } from './ratelimit';
 
 export interface BudgetEnv {
   CHAT_RL?: KvNamespace;
 }
 
-// Margem sob os limites grátis (deixa folga para erro de estimativa e outros usos).
+// Margem sob o limite grátis (deixa folga para erro de estimativa e outros usos).
 const DAILY_NEURON_BUDGET = 8000; // de 10.000 neurons/dia do Workers AI
-const DAILY_EMAIL_CAP = 90; // de 100 e-mails/dia do Resend
 const TTL = 172800; // 2 dias — o contador do dia expira sozinho
 
 // Custo em neurons por 1.000.000 de tokens (fonte: pricing do Workers AI).
 const RATES: Record<string, { in: number; out: number }> = {
   [REPLY_MODEL]: { in: 26668, out: 204805 }, // llama-3.3-70b-instruct-fp8-fast
-  [EXTRACT_MODEL]: { in: 25608, out: 75147 }, // llama-3.1-8b-instruct
 };
 
 /** ~4 caracteres por token (estimativa grosseira, suficiente para o freio). */
@@ -63,21 +60,5 @@ export async function addNeurons(env: BudgetEnv, neurons: number): Promise<void>
     await kv.put(key, String(used + Math.round(neurons)), { expirationTtl: TTL });
   } catch (err) {
     console.error('Budget write falhou:', err);
-  }
-}
-
-/** Reserva 1 envio de e-mail do dia. Retorna false quando o cap diário já foi atingido. */
-export async function allowEmail(env: BudgetEnv): Promise<boolean> {
-  const kv = env.CHAT_RL;
-  if (!kv) return true;
-  try {
-    const key = `emails:${dayKey()}`;
-    const sent = parseInt((await kv.get(key)) || '0', 10);
-    if (sent >= DAILY_EMAIL_CAP) return false;
-    await kv.put(key, String(sent + 1), { expirationTtl: TTL });
-    return true;
-  } catch (err) {
-    console.error('Email cap falhou:', err);
-    return true;
   }
 }

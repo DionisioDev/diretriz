@@ -73,6 +73,27 @@ export function fieldsTable(rows: [string, string][]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">${cells}</table>`;
 }
 
+/** Bloco de transcrição da conversa (contexto opcional do lead). */
+export function transcriptBlock(history: { role: string; content: string }[], heading: string): string {
+  const items = history
+    .filter((m) => m && typeof m.content === 'string' && m.content.trim())
+    .map(
+      (m) =>
+        `<p style="margin:0 0 9px;font-family:${FONT};font-size:13px;line-height:1.55;color:#4B5468">
+          <strong style="color:${m.role === 'user' ? '#2563EB' : '#0B1220'}">${
+          m.role === 'user' ? 'Visitante' : 'Assistente'
+        }:</strong> ${escapeHtml(m.content)}</p>`,
+    )
+    .join('');
+  if (!items) return '';
+  return `<div style="margin-top:26px">
+    <div style="font-family:${FONT};font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#8A93A6;margin:0 0 10px">${escapeHtml(
+      heading,
+    )}</div>
+    <div style="background:#F8FAFE;border:1px solid #EEF3FB;border-radius:12px;padding:14px 16px">${items}</div>
+  </div>`;
+}
+
 /** Envelopa o conteúdo num cartão com cabeçalho de marca + rodapé. `kicker` é o selo (ex.: "NOVO LEAD"). */
 export function wrapEmail(opts: { kicker: string; title: string; subtitle: string; bodyHtml: string }): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F4F7FC;margin:0;padding:0;border-collapse:collapse">

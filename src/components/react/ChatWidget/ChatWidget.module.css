@@ -417,6 +417,115 @@
   color: var(--color-primary);
 }
 
+/* ---------------- CTA "Deixar meus dados" ---------------- */
+.leadCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: center;
+  margin: 0 14px 12px;
+  padding: 9px 16px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-primary-pale);
+  background: var(--color-bg-deep);
+  color: var(--color-primary);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--motion-fast), border-color var(--motion-fast), transform var(--motion-fast);
+}
+.leadCta:hover {
+  background: var(--color-primary-pale);
+  border-color: var(--color-primary-soft);
+  transform: translateY(-1px);
+}
+.leadCta svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------------- Formulário de contato (sem IA) ---------------- */
+.leadForm {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-bg-elevated);
+}
+.leadFormHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+.leadFormHead strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.leadFormBack {
+  border: none;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+.leadFormBack:hover {
+  text-decoration: underline;
+}
+.leadInput {
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 11px 14px;
+  transition: border-color var(--motion-fast);
+}
+.leadInput::placeholder {
+  color: var(--color-text-dim);
+}
+.leadInput:focus {
+  outline: none;
+  border-color: var(--color-primary-soft);
+}
+.leadFormError {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #B91C1C;
+}
+.leadSubmit {
+  margin-top: 2px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background var(--motion-fast);
+}
+.leadSubmit:hover:not(:disabled) {
+  background: var(--color-primary-bright);
+}
+.leadSubmit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.leadFormPrivacy {
+  margin: 2px 0 0;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--color-text-dim);
+  text-align: center;
+}
+
 /* ---------------- Mobile ---------------- */
 @media (max-width: 520px) {
   .panel {
