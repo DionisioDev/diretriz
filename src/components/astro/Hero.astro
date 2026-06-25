@@ -68,11 +68,15 @@ const taglineFlat = c.hero.tagline.join(' ');
   @media (max-width: 980px) {
     .hero__inner {
       grid-template-columns: 1fr;
-      gap: 18px;
+      /* gap:0 — no mobile .copy vira display:contents e seus filhos entram no
+         grid; o espaçamento entre eles vem das margens próprias (kicker/título/
+         subtítulo), não do gap. Ver HeroIntro.module.css. */
+      gap: 0;
     }
-    /* No mobile o avião ganha um "palco" próprio no topo (o .planeBg vira bloco
-       em fluxo — ver HeroIntro.module.css), espelhando o split do desktop numa
-       pilha: avião em cima, texto embaixo. A coluna-fantasma do desktop some. */
+    /* No mobile o avião ganha um "palco" próprio (o .planeBg vira bloco em fluxo
+       — ver HeroIntro.module.css). A pilha intercala o avião entre o subtítulo e
+       os botões via grid order: kicker → título → subtítulo → avião → botões.
+       A coluna-fantasma do desktop some. */
     .hero__visual {
       display: none;
     }

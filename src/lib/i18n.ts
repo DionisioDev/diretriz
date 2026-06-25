@@ -159,6 +159,7 @@ export interface SiteContent {
     retry: string;
     open: string;
     close: string;
+    newChat: string;
   };
 }
 
@@ -367,6 +368,7 @@ const content: Record<Locale, SiteContent> = {
       retry: 'Tentar de novo',
       open: 'Abrir chat',
       close: 'Fechar chat',
+      newChat: 'Nova conversa',
     },
   },
   en: {
@@ -573,6 +575,7 @@ const content: Record<Locale, SiteContent> = {
       retry: 'Try again',
       open: 'Open chat',
       close: 'Close chat',
+      newChat: 'New chat',
     },
   },
 };

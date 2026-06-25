@@ -61,9 +61,8 @@ const homePath = getLocalizedPath('home', locale);
       aria-controls="nav-mobile"
       aria-expanded="false"
     >
-      <span class="nav__toggle-bar"></span>
-      <span class="nav__toggle-bar"></span>
-      <span class="nav__toggle-bar"></span>
+      <span class="material-symbols-outlined nav__toggle-icon nav__toggle-icon--open" aria-hidden="true">menu</span>
+      <span class="material-symbols-outlined nav__toggle-icon nav__toggle-icon--close" aria-hidden="true">close</span>
     </button>
   </div>
 </header>
@@ -318,29 +317,24 @@ const homePath = getLocalizedPath('home', locale);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     background: var(--color-bg-elevated);
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     cursor: pointer;
+    color: var(--color-text);
     transition: border-color var(--motion-fast) var(--ease), background var(--motion-fast);
   }
-  .nav__toggle-bar {
-    display: block;
-    width: 18px;
-    height: 1.5px;
-    background: var(--color-text);
-    border-radius: 2px;
-    transition: transform var(--motion-fast) var(--ease), opacity var(--motion-fast) var(--ease);
+  .nav__toggle-icon {
+    font-size: 24px;
   }
-  :global(body.nav-open) .nav__toggle-bar:nth-child(1) {
-    transform: translateY(6.5px) rotate(45deg);
+  /* Fechado mostra "menu"; ao abrir (body.nav-open) troca para "close". */
+  .nav__toggle-icon--close {
+    display: none;
   }
-  :global(body.nav-open) .nav__toggle-bar:nth-child(2) {
-    opacity: 0;
+  :global(body.nav-open) .nav__toggle-icon--open {
+    display: none;
   }
-  :global(body.nav-open) .nav__toggle-bar:nth-child(3) {
-    transform: translateY(-6.5px) rotate(-45deg);
+  :global(body.nav-open) .nav__toggle-icon--close {
+    display: inline-block;
   }
 
   /* ---- Painel mobile ---- */
@@ -403,6 +397,13 @@ const homePath = getLocalizedPath('home', locale);
   }
 
   @media (max-width: 980px) {
+    /* nav__links some no mobile, deixando só brand + nav__right como grid items.
+       Sem reduzir as colunas, o auto-placement jogaria o nav__right para a coluna
+       do meio (centro). Com 1fr auto, brand fica à esquerda e nav__right cola no
+       canto direito. */
+    .nav {
+      grid-template-columns: 1fr auto;
+    }
     .nav__links {
       display: none;
     }
@@ -423,7 +424,6 @@ const homePath = getLocalizedPath('home', locale);
 
   @media (prefers-reduced-motion: reduce) {
     .nav__mobile,
-    .nav__toggle-bar,
     .nav__link::after {
       transition: none;
     }

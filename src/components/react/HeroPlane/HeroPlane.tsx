@@ -78,6 +78,8 @@ export default function HeroPlane({ onLanded }: Props) {
         if (landedFired) {
           restFinal = getFinal();
           restScale = planeScaleVal();
+          restW = W;
+          restH = H;
         }
         staticRedraw?.();
       });
@@ -111,12 +113,12 @@ export default function HeroPlane({ onLanded }: Props) {
 
     // Partículas ambientes (visíveis após pouso)
     const particles: Particle[] = [];
-    for (let i = 0; i < 520; i++) {
+    for (let i = 0; i < 780; i++) {
       particles.push({
         progress: Math.random(),
         path: Math.random(),
         speed: 0.0018 + Math.random() * 0.0035,
-        size: 0.5 + Math.random() * 1.6,
+        size: 0.6 + Math.random() * 1.9,
       });
     }
 
@@ -128,6 +130,10 @@ export default function HeroPlane({ onLanded }: Props) {
     let landedFired = false;
     let restFinal: { x: number; y: number; angle: number } | null = null;
     let restScale = 0;
+    // Dimensões congeladas no pouso — a estela ancora nelas (não nas W/H vivas)
+    // para não saltar quando o reflow da escrita/fonte muda o tamanho do canvas.
+    let restW = 0;
+    let restH = 0;
 
     const getStart = () => ({ x: -W * 0.18, y: H * 0.85, angle: -0.55 });
     const getControl = () => ({ x: W * 0.3, y: H * 0.2 });
@@ -140,7 +146,17 @@ export default function HeroPlane({ onLanded }: Props) {
     // PLANE_ANCHOR: ↑ move o avião p/ a direita (mais perto da borda, margem
     // direita menor / mais simétrica); ↓ move p/ a esquerda (mais perto do texto).
     const PLANE_ANCHOR = 0.84;
-    const getFinal = () => ({ x: (W - Wc) / 2 + Wc * PLANE_ANCHOR, y: H * 0.5, angle: -0.22 });
+    // No mobile o canvas deixa de ser full-bleed e passa a ter só a largura do
+    // container (ver HeroIntro.module.css), então não há a "pista" extra à
+    // direita: o anchor de 84% jogaria o avião contra a borda e cortaria a ponta.
+    // Aí centralizamos (x = 50%) e subimos um pouco (y = 0.44) para o avião
+    // ficar mais perto do texto que vem acima dele na pilha mobile.
+    const mobileMq =
+      typeof window !== 'undefined' ? window.matchMedia('(max-width: 980px)') : null;
+    const getFinal = () =>
+      mobileMq?.matches
+        ? { x: W * 0.5 + 30, y: H * 0.4, angle: -0.22 }
+        : { x: (W - Wc) / 2 + Wc * PLANE_ANCHOR, y: H * 0.5, angle: -0.22 };
     const planeScaleVal = () => Math.min(W, H) / 330;
 
     const bezX = (
@@ -179,6 +195,8 @@ export default function HeroPlane({ onLanded }: Props) {
         // reescalado pela escrita/reflow do layout.
         restFinal = getFinal();
         restScale = planeScaleVal();
+        restW = W;
+        restH = H;
         if (onLandedRef.current) onLandedRef.current();
       }
 
@@ -211,15 +229,31 @@ export default function HeroPlane({ onLanded }: Props) {
       const ss = easedT * easedT * (3 - 2 * easedT);
       const planeAngle = flightAngle * (1 - ss) + (final.angle + idleA) * ss;
 
-      if (flightT < 1) {
-        // Trail durante voo: sombras amostrando a curva em tempos anteriores
+      // Cross-fade do pouso: o rastro de voo não some de golpe no frame do pouso
+      // (o que causava o "pop"/quebra ao avião fixar). Ele segue um instante
+      // esmaecendo (TRAIL_FADE_OUT) enquanto a estela ambiente entra
+      // (FADE_IN_DURATION) — as duas se cruzam suavemente, sem frame sem rastro.
+      const landedElapsed = flightT >= 1 ? elapsed - FLIGHT_DURATION : 0;
+      const TRAIL_FADE_OUT = 650;
+      const trailFadeRaw = flightT < 1 ? 1 : Math.max(0, 1 - landedElapsed / TRAIL_FADE_OUT);
+      // smoothstep: esmaece com easing gentil nas duas pontas (sem corte linear)
+      const trailFadeOut = trailFadeRaw * trailFadeRaw * (3 - 2 * trailFadeRaw);
+
+      if (trailFadeOut > 0) {
+        // Trail de voo: sombras amostrando a curva em tempos anteriores
         const TRAIL_COUNT = 48;
         for (let i = 1; i <= TRAIL_COUNT; i++) {
           const trailT = i / TRAIL_COUNT;
           const sampleEased = Math.max(0, easedT - trailT * 0.22);
           const tx = bezX(sampleEased, start, control, final);
           const ty = bezY(sampleEased, start, control, final);
-          const alpha = (1 - trailT) * 0.45 * Math.min(1, flightT * 2);
+          // Fade espacial na borda esquerda: a sombra some suavemente ao se
+          // aproximar de x=0 e não é desenhada à esquerda da borda. Assim o rastro
+          // "surge" da lateral esquerda em vez de ser cortado em seco ali (o avião
+          // entra de fora-esquerda, então a cauda do rastro fica em x negativo).
+          const edgeFade = Math.max(0, Math.min(1, tx / (W * 0.12)));
+          const alpha = (1 - trailT) * 0.45 * Math.min(1, flightT * 2) * edgeFade * trailFadeOut;
+          if (alpha <= 0) continue;
           const r = (2.5 - trailT * 2) * (0.7 + 0.3 * Math.sin(i * 0.7));
           const accent = i % 4 === 0;
           ctx.fillStyle = accent
@@ -229,18 +263,30 @@ export default function HeroPlane({ onLanded }: Props) {
           ctx.arc(tx, ty, Math.max(0.4, r), 0, Math.PI * 2);
           ctx.fill();
         }
-      } else {
-        // Após pouso: estela de partículas ambientes com fade-in
-        const idleElapsed = elapsed - FLIGHT_DURATION;
+      }
+
+      if (flightT >= 1) {
+        // Após pouso: estela de partículas ambientes com fade-in (cruza com o
+        // rastro de voo que ainda está esmaecendo — ver trailFadeOut acima).
+        const idleElapsed = landedElapsed;
         const fadeIn = Math.min(1, idleElapsed / FADE_IN_DURATION);
+        // No mobile o palco é bem menor: a estela (densificada p/ o desktop) fica
+        // concentrada demais. Em vez de baixar a opacidade, rareamos a QUANTIDADE
+        // de bolhas no mobile (ver loop de partículas abaixo) — a densidade/brilho
+        // de cada bolha continua igual ao desktop.
+        const mobile = mobileMq?.matches;
 
-        const pStartX = -W * 0.05;
-        const pStartY = H * 0.78;
+        // Origem da estela ancorada nas dimensões congeladas no pouso (restW/
+        // restH), não nas vivas — assim ela não "quebra" quando a escrita do
+        // typewriter (ou a fonte carregando) provoca reflow do canvas. O destino
+        // segue planeX/planeY, que carregam o float idle vivo do avião.
+        const pStartX = -restW * 0.05;
+        const pStartY = restH * 0.78;
 
-        ctx.lineWidth = 1;
+        ctx.lineWidth = 1.25;
         for (let k = 0; k < 7; k++) {
           const offset = (k - 3) * 26;
-          ctx.strokeStyle = `rgba(96, 165, 250, ${(0.05 + (3 - Math.abs(k - 3)) * 0.018) * fadeIn})`;
+          ctx.strokeStyle = `rgba(96, 165, 250, ${(0.07 + (3 - Math.abs(k - 3)) * 0.026) * fadeIn})`;
           ctx.beginPath();
           const cpX = (pStartX + planeX) * 0.45;
           const cpY = pStartY - 60 + offset * 1.4;
@@ -249,9 +295,14 @@ export default function HeroPlane({ onLanded }: Props) {
           ctx.stroke();
         }
 
-        for (const p of particles) {
+        for (let pi = 0; pi < particles.length; pi++) {
+          const p = particles[pi];
           p.progress += p.speed;
           if (p.progress > 1) p.progress = 0;
+
+          // No mobile pula ~1/3 das bolhas (rareia a quantidade); o progress já
+          // avançou acima, então a animação segue contínua ao voltar pro desktop.
+          if (mobile && pi % 3 === 0) continue;
 
           const offset = (p.path - 0.5) * 220;
           const cpX = (pStartX + planeX) * 0.45;
@@ -267,7 +318,7 @@ export default function HeroPlane({ onLanded }: Props) {
           const y = (1 - u) * (1 - u) * sy + 2 * (1 - u) * u * cpY + u * u * ey;
 
           const fade = Math.sin(p.progress * Math.PI);
-          const alpha = fade * 0.55 * fadeIn;
+          const alpha = fade * 0.72 * fadeIn;
           const accent = p.path > 0.42 && p.path < 0.58;
           const isClose = u > 0.65;
           const color = accent

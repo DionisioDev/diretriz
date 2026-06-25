@@ -36,7 +36,6 @@ export default function HeroIntro({
   ctaPrimary,
   ctaSecondary,
   contactHref,
-  aboutHref,
   preloaderBrand,
   showPreloader = true,
 }: Props) {
@@ -91,12 +90,15 @@ export default function HeroIntro({
               <path d="M2 12 L12 2 M5 2 L12 2 L12 9" stroke="currentColor" strokeWidth="1.5" fill="none" />
             </svg>
           </a>
-          <a href={aboutHref} className="btn btn--ghost">
+          {/* "Conhecer mais" permanece visível, mas SEM vínculo de navegação
+              (era <a href={aboutHref}> → /#sobre). Vira <button> sem ação para
+              não levar o usuário à seção do Manifesto ao clicar. */}
+          <button type="button" className="btn btn--ghost">
             {ctaSecondary}
             <svg className="btn-arrow" viewBox="0 0 14 14" aria-hidden="true">
               <path d="M7 2 L7 12 M2 7 L7 12 L12 7" stroke="currentColor" strokeWidth="1.5" fill="none" />
             </svg>
-          </a>
+          </button>
         </div>
       </div>
     </>

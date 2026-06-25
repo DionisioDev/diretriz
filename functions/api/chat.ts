@@ -1,54 +1,58 @@
 /**
- * POST /api/chat — assistente de qualificação de leads com Cloudflare Workers AI.
+ * POST /api/chat — assistente de qualificação de leads (Cloudflare Workers AI).
  *
- * Fluxo:
- *   1. Recebe o histórico de mensagens + locale + flag leadEmailed.
- *   2. Chama Workers AI (Llama) com um system prompt que faz o assistente
- *      conversar e, quando tiver a demanda + um contato, marcar lead_ready.
- *   3. Quando o lead está pronto e ainda não foi enviado, dispara o e-mail (Resend).
+ * Responde em STREAMING (SSE) e, ao final, captura o lead. São duas chamadas de modelo:
+ *   1. RESPOSTA  — texto conversacional em streaming (ver functions/_shared/chat-ai.ts).
+ *   2. EXTRAÇÃO  — lead estruturado via JSON mode, só quando há contato na conversa.
+ *
+ * Protocolo SSE devolvido ao client:
+ *   data: {"delta":"..."}              pedaço de texto da resposta
+ *   data: {"lead":{"captured":bool}}   status do lead (após a resposta)
+ *   data: [DONE]                       fim
+ *
+ * Proteções: rate-limit por IP (functions/_shared/ratelimit.ts), cap de tamanho/turnos.
  *
  * Bindings/vars no Cloudflare Pages:
  *   AI               (Workers AI binding)
  *   RESEND_API_KEY   (secret)        — ver functions/_shared/email.ts
  *   LEAD_TO_EMAIL / LEAD_FROM_EMAIL  — opcionais
+ *   CHAT_LIMITER (rate-limit) ou CHAT_RL (KV)  — opcionais; ver ratelimit.ts
  *
- * Sem a chave Resend o chat ainda funciona (conversa), apenas não envia e-mail —
- * a resposta traz leadCaptured:false e o motivo fica no log.
+ * Sem o binding AI o chat ainda responde (pedindo e-mail), apenas não usa IA.
  */
 import { sendLeadEmail, escapeHtml, type EmailEnv } from '../_shared/email';
+import {
+  REPLY_MODEL,
+  replySystemPrompt,
+  extractLead,
+  hasContact,
+  type ChatMessage,
+  type Lead,
+  type Locale,
+} from '../_shared/chat-ai';
+import { checkRate, type RateEnv } from '../_shared/ratelimit';
+import { overAiBudget, estimateNeurons, addNeurons, allowEmail } from '../_shared/budget';
+import { EXTRACT_MODEL, extractSystemPrompt } from '../_shared/chat-ai';
 
-interface Env extends EmailEnv {
+interface Env extends EmailEnv, RateEnv {
   AI?: { run(model: string, input: unknown): Promise<unknown> };
-}
-
-type Role = 'user' | 'assistant';
-interface ChatMessage {
-  role: Role;
-  content: string;
 }
 
 interface ChatBody {
   messages?: ChatMessage[];
-  locale?: 'pt' | 'en';
+  locale?: Locale;
   leadEmailed?: boolean;
 }
 
-interface Lead {
-  name: string | null;
-  contact: string | null;
-  type: string | null;
-  summary: string | null;
-}
-
-interface ModelOutput {
-  reply: string;
-  lead_ready: boolean;
-  lead: Lead | null;
-}
-
-const MODEL = '@cf/meta/llama-3.1-8b-instruct';
 const MAX_MESSAGES = 24;
 const MAX_LEN = 2000;
+const MAX_USER_TURNS = 30; // cap anti-abuso por conversa
+
+const SSE_HEADERS = {
+  'Content-Type': 'text/event-stream; charset=utf-8',
+  'Cache-Control': 'no-cache',
+  Connection: 'keep-alive',
+};
 
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -56,58 +60,38 @@ const json = (data: unknown, status = 200) =>
     headers: { 'Content-Type': 'application/json' },
   });
 
-function systemPrompt(locale: 'pt' | 'en'): string {
-  if (locale === 'en') {
-    return `You are the lead-qualification assistant for Diretriz Tecnologia, a Brazilian software studio that builds custom products, automates internal workflows and offers technical consulting.
-Goal: understand the visitor's need and collect a contact so the team can follow up.
-Rules:
-- Reply ALWAYS in English, friendly, concise (max 2 short sentences), one question at a time.
-- Gather: (1) what they need / the problem, (2) a bit of context, (3) a contact (email or phone) and their name.
-- Never invent prices or delivery dates. If asked, say the team gives a tailored answer within 1 business day.
-- When you already have a clear problem summary AND a contact, set lead_ready=true and fill "lead". Otherwise lead_ready=false and lead=null.
-Respond ONLY with a JSON object, no markdown, with this exact shape:
-{"reply": string, "lead_ready": boolean, "lead": {"name": string|null, "contact": string|null, "type": string|null, "summary": string|null} | null}`;
-  }
-  return `Você é o assistente de qualificação de leads da Diretriz Tecnologia, um estúdio de software brasileiro que constrói produtos sob medida, automatiza fluxos internos e faz consultoria técnica.
-Objetivo: entender a necessidade do visitante e coletar um contato para o time dar sequência.
-Regras:
-- Responda SEMPRE em português do Brasil, amigável e direto (no máximo 2 frases curtas), uma pergunta por vez.
-- Levante: (1) o que a pessoa precisa / o problema, (2) um pouco de contexto, (3) um contato (e-mail ou telefone) e o nome.
-- Nunca invente preços ou prazos. Se perguntarem, diga que o time responde sob medida em até 1 dia útil.
-- Quando já tiver um resumo claro do problema E um contato, defina lead_ready=true e preencha "lead". Caso contrário lead_ready=false e lead=null.
-Responda APENAS com um objeto JSON, sem markdown, exatamente neste formato:
-{"reply": string, "lead_ready": boolean, "lead": {"name": string|null, "contact": string|null, "type": string|null, "summary": string|null} | null}`;
-}
+/** Mensagens geradas pelo próprio servidor (sem IA), por locale. Sem emoji (regra da marca). */
+const MSG = {
+  noAi: {
+    pt: 'Ainda não estou totalmente ligado aqui. Escreve pra diretriztecnologia@gmail.com que o time responde rápido.',
+    en: "I'm not fully wired up yet. Please write to diretriztecnologia@gmail.com and the team will reply quickly.",
+  },
+  error: {
+    pt: 'Algo falhou aqui. Tenta de novo, ou escreve direto pra diretriztecnologia@gmail.com.',
+    en: 'Something failed here. Please try again, or write to diretriztecnologia@gmail.com.',
+  },
+  rate: {
+    pt: 'Você mandou várias mensagens em sequência. Aguarde alguns segundos e tente de novo.',
+    en: 'You sent several messages in a row. Please wait a few seconds and try again.',
+  },
+  cap: {
+    pt: 'Já temos bastante contexto. Para seguir, me deixa um e-mail ou escreve para diretriztecnologia@gmail.com que o time continua com você.',
+    en: 'We already have plenty of context. To move on, leave me an email or write to diretriztecnologia@gmail.com and the team will follow up.',
+  },
+} as const;
 
-/** Extrai o JSON do modelo de forma tolerante (o Llama às vezes embrulha em texto). */
-function parseModel(raw: string): ModelOutput {
-  const fallback: ModelOutput = { reply: raw.trim(), lead_ready: false, lead: null };
-  if (!raw) return { ...fallback, reply: '' };
-
-  let candidate = raw.trim();
-  const fence = candidate.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (fence) candidate = fence[1].trim();
-  const first = candidate.indexOf('{');
-  const last = candidate.lastIndexOf('}');
-  if (first === -1 || last === -1 || last <= first) return fallback;
-
-  try {
-    const obj = JSON.parse(candidate.slice(first, last + 1));
-    const reply = typeof obj.reply === 'string' && obj.reply.trim() ? obj.reply.trim() : fallback.reply;
-    const lead_ready = obj.lead_ready === true;
-    let lead: Lead | null = null;
-    if (lead_ready && obj.lead && typeof obj.lead === 'object') {
-      lead = {
-        name: typeof obj.lead.name === 'string' ? obj.lead.name : null,
-        contact: typeof obj.lead.contact === 'string' ? obj.lead.contact : null,
-        type: typeof obj.lead.type === 'string' ? obj.lead.type : null,
-        summary: typeof obj.lead.summary === 'string' ? obj.lead.summary : null,
-      };
-    }
-    return { reply, lead_ready, lead };
-  } catch {
-    return fallback;
-  }
+/** Resposta SSE de uma mensagem única (sem IA): um delta + lead:false + [DONE]. */
+function oneShotSse(reply: string): Response {
+  const enc = new TextEncoder();
+  const stream = new ReadableStream({
+    start(c) {
+      c.enqueue(enc.encode(`data: ${JSON.stringify({ delta: reply })}\n\n`));
+      c.enqueue(enc.encode(`data: ${JSON.stringify({ lead: { captured: false } })}\n\n`));
+      c.enqueue(enc.encode('data: [DONE]\n\n'));
+      c.close();
+    },
+  });
+  return new Response(stream, { status: 200, headers: SSE_HEADERS });
 }
 
 function leadEmailHtml(lead: Lead, history: ChatMessage[], locale: string): string {
@@ -158,55 +142,125 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return json({ error: 'JSON inválido.' }, 400);
   }
 
-  const locale = body.locale === 'en' ? 'en' : 'pt';
+  const locale: Locale = body.locale === 'en' ? 'en' : 'pt';
   const incoming = Array.isArray(body.messages) ? body.messages : [];
   const history: ChatMessage[] = incoming
     .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
     .slice(-MAX_MESSAGES)
     .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_LEN) }));
 
-  if (history.length === 0 || history[history.length - 1].role !== 'user') {
+  if (history.length === 0 || history[history.length - 1].role !== 'user' || !history[history.length - 1].content.trim()) {
     return json({ error: 'Mensagem do usuário ausente.' }, 422);
   }
 
-  if (!context.env.AI) {
-    return json(
-      {
-        reply:
-          locale === 'en'
-            ? "I'm not fully wired up yet. Please write to diretriztecnologia@gmail.com and the team will reply quickly."
-            : 'Ainda não estou totalmente ligado aqui. Escreve pra diretriztecnologia@gmail.com que o time responde rápido.',
-        leadCaptured: false,
-      },
-      200,
-    );
+  // Rate-limit por IP — degrada para "permitir" se nada estiver configurado (dev local).
+  const ip = context.request.headers.get('cf-connecting-ip') || 'anon';
+  if (!(await checkRate(context.env, ip))) {
+    return oneShotSse(MSG.rate[locale]);
   }
 
-  let raw = '';
-  try {
-    const result = (await context.env.AI.run(MODEL, {
-      messages: [{ role: 'system', content: systemPrompt(locale) }, ...history],
-      max_tokens: 512,
-      temperature: 0.4,
-    })) as { response?: string } | string;
-    raw = typeof result === 'string' ? result : result?.response || '';
-  } catch (err) {
-    console.error('Workers AI error:', err);
-    return json({ error: 'AI indisponível.' }, 502);
+  // Cap de turnos por conversa (anti-abuso) — conta o histórico COMPLETO enviado
+  // pelo client (não o `history` já cortado em MAX_MESSAGES) e não chama a IA.
+  const totalUserTurns = incoming.filter((m) => m && m.role === 'user').length;
+  if (totalUserTurns > MAX_USER_TURNS) {
+    return oneShotSse(MSG.cap[locale]);
   }
 
-  const out = parseModel(raw);
-  let leadCaptured = false;
-
-  if (out.lead_ready && out.lead && out.lead.contact && !body.leadEmailed) {
-    const sent = await sendLeadEmail(context.env, {
-      subject: `Lead do chat — ${out.lead.name || 'sem nome'}`,
-      html: leadEmailHtml(out.lead, history, locale),
-      replyTo: out.lead.contact.includes('@') ? out.lead.contact : undefined,
-    });
-    leadCaptured = sent.ok;
-    if (!sent.ok) console.error('Lead email falhou:', sent.error);
+  // Sem binding de IA: responde pedindo e-mail.
+  const ai = context.env.AI;
+  if (!ai) {
+    return oneShotSse(MSG.noAi[locale]);
   }
 
-  return json({ reply: out.reply, leadCaptured });
+  // Freio de orçamento diário (free tier): estourou os neurons do dia → fallback.
+  if (await overAiBudget(context.env)) {
+    return oneShotSse(MSG.noAi[locale]);
+  }
+
+  const enc = new TextEncoder();
+  const dec = new TextDecoder();
+  const leadEmailed = body.leadEmailed === true;
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      const send = (obj: unknown) => controller.enqueue(enc.encode(`data: ${JSON.stringify(obj)}\n\n`));
+
+      // 1) Resposta conversacional em streaming.
+      let replyText = '';
+      try {
+        const aiStream = (await ai.run(REPLY_MODEL, {
+          messages: [{ role: 'system', content: replySystemPrompt(locale) }, ...history],
+          stream: true,
+          max_tokens: 300,
+          temperature: 0.5,
+        })) as ReadableStream<Uint8Array>;
+
+        const reader = aiStream.getReader();
+        let buffer = '';
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += dec.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            const data = trimmed.slice(5).trim();
+            if (!data || data === '[DONE]') continue;
+            try {
+              const token = (JSON.parse(data) as { response?: string }).response || '';
+              if (token) {
+                replyText += token;
+                send({ delta: token });
+              }
+            } catch {
+              /* linha SSE parcial/ruído — ignora */
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Workers AI stream error:', err);
+        if (!replyText) send({ delta: MSG.error[locale] });
+      }
+
+      // Acumula a estimativa de neurons do turno (resposta + extração) p/ gravar 1x.
+      let turnNeurons = 0;
+      if (replyText) {
+        const replyIn = replySystemPrompt(locale).length + history.reduce((s, m) => s + m.content.length, 0);
+        turnNeurons += estimateNeurons(REPLY_MODEL, replyIn, replyText.length);
+      }
+
+      // 2) Extração de lead (JSON mode) — só se houver contato e ainda não enviamos.
+      let captured = false;
+      if (replyText && !leadEmailed) {
+        const userText = history.filter((m) => m.role === 'user').map((m) => m.content).join('\n');
+        if (hasContact(userText)) {
+          const convo: ChatMessage[] = [...history, { role: 'assistant', content: replyText }];
+          const lead = await extractLead(ai, convo, locale);
+          // neurons da extração (saída JSON ~estimada em 200 caracteres)
+          const extractIn = extractSystemPrompt(locale).length + convo.reduce((s, m) => s + m.content.length, 0);
+          turnNeurons += estimateNeurons(EXTRACT_MODEL, extractIn, 200);
+          // Envia o lead respeitando o cap diário de e-mails (free tier do Resend).
+          if (lead && lead.contact && (await allowEmail(context.env))) {
+            const sent = await sendLeadEmail(context.env, {
+              subject: `Lead do chat — ${lead.name || 'sem nome'}`,
+              html: leadEmailHtml(lead, history, locale),
+              replyTo: lead.contact.includes('@') ? lead.contact : undefined,
+            });
+            captured = sent.ok;
+            if (!sent.ok) console.error('Lead email falhou:', sent.error);
+          }
+        }
+      }
+
+      await addNeurons(context.env, turnNeurons);
+
+      send({ lead: { captured } });
+      controller.enqueue(enc.encode('data: [DONE]\n\n'));
+      controller.close();
+    },
+  });
+
+  return new Response(stream, { status: 200, headers: SSE_HEADERS });
 };
