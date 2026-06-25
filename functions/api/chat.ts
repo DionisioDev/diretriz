@@ -135,8 +135,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         const aiStream = (await ai.run(REPLY_MODEL, {
           messages: [{ role: 'system', content: replySystemPrompt(locale) }, ...history],
           stream: true,
-          max_tokens: 300,
-          temperature: 0.5,
+          max_tokens: 160,
+          temperature: 0.4,
         })) as ReadableStream<Uint8Array>;
 
         const reader = aiStream.getReader();

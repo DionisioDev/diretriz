@@ -42,6 +42,9 @@ type FormStatus = 'idle' | 'sending' | 'error';
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
+// Após N mensagens do usuário, abre o formulário de contato (uma vez) para incentivar o lead.
+const LEAD_PROMPT_AFTER = 3;
+
 const fmtTime = (d: Date) =>
   `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
@@ -68,6 +71,7 @@ export default function ChatWidget({ strings, locale }: Props) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
   const [formStatus, setFormStatus] = useState<FormStatus>('idle');
+  const [autoPrompted, setAutoPrompted] = useState(false); // form já abriu sozinho?
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -152,6 +156,13 @@ export default function ChatWidget({ strings, locale }: Props) {
         { role: 'assistant', content: acc.trim() || strings.error, time: fmtTime(new Date()) },
       ]);
       setStatus('idle');
+
+      // Após algumas mensagens, abre o formulário de contato (uma vez) para incentivar o lead.
+      const userTurns = convo.filter((m) => m.role === 'user').length;
+      if (userTurns >= LEAD_PROMPT_AFTER && !leadSent && !autoPrompted) {
+        setAutoPrompted(true);
+        setShowForm(true);
+      }
     } catch {
       setStreamText(null);
       setStatus('error');
@@ -183,6 +194,7 @@ export default function ChatWidget({ strings, locale }: Props) {
     setShowForm(false);
     setForm({ name: '', email: '', phone: '' });
     setFormStatus('idle');
+    setAutoPrompted(false);
   };
 
   /** Envia o contato direto para /api/contact (Resend) — sem passar pela IA. */
@@ -213,6 +225,8 @@ export default function ChatWidget({ strings, locale }: Props) {
       setShowForm(false);
       setLeadSent(true);
       setFormStatus('idle');
+      // Confirma no fluxo da conversa e convida a continuar (o composer segue ativo).
+      setMessages((m) => [...m, { role: 'assistant', content: strings.sent, time: fmtTime(new Date()) }]);
     } catch {
       setFormStatus('error');
     }
@@ -334,8 +348,6 @@ export default function ChatWidget({ strings, locale }: Props) {
               </div>
             </div>
           )}
-
-          {leadSent && <div className={styles.captured}>{strings.sent}</div>}
 
           {status === 'error' && (
             <div className={styles.errorRow}>
