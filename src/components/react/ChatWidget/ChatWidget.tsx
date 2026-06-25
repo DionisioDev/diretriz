@@ -30,15 +30,6 @@ interface Msg {
 
 type Status = 'idle' | 'sending' | 'error';
 
-interface Stored {
-  messages: Msg[];
-  leadEmailed: boolean;
-  ts: number;
-}
-
-const STORAGE_PREFIX = 'diretriz.chat.v1';
-const MAX_AGE = 24 * 60 * 60 * 1000; // 24h
-
 const fmtTime = (d: Date) =>
   `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
@@ -48,11 +39,9 @@ const fmtTime = (d: Date) =>
  * Conversa com a Pages Function `/api/chat` (Workers AI) em STREAMING: lê o corpo
  * SSE e renderiza a resposta token a token. Quando o servidor sinaliza
  * `lead.captured`, mostra a confirmação e marca `leadEmailed` (não reenvia).
- * A conversa é persistida em localStorage (por idioma, expira em 24h).
+ * A conversa NÃO é persistida — recarregar a página recomeça do zero.
  */
 export default function ChatWidget({ strings, locale }: Props) {
-  const storageKey = `${STORAGE_PREFIX}.${locale}`;
-
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>(() => [
     { role: 'assistant', content: strings.greeting, time: fmtTime(new Date()) },
@@ -67,42 +56,6 @@ export default function ChatWidget({ strings, locale }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  // Hidrata a conversa salva (client-only; roda uma vez).
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) return;
-      const parsed = JSON.parse(raw) as Stored;
-      if (!parsed || !Array.isArray(parsed.messages) || typeof parsed.ts !== 'number') return;
-      if (Date.now() - parsed.ts > MAX_AGE) {
-        localStorage.removeItem(storageKey);
-        return;
-      }
-      const valid = parsed.messages.filter(
-        (m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string',
-      );
-      if (valid.length > 0) {
-        setMessages(valid.map((m) => ({ role: m.role, content: m.content, time: m.time || '' })));
-        setLeadEmailed(parsed.leadEmailed === true);
-      }
-    } catch {
-      /* storage indisponível/corrompido — segue com o greeting */
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Persiste a conversa concluída (não durante o streaming, e só se houve interação).
-  useEffect(() => {
-    if (status === 'sending' || streamText !== null) return;
-    if (messages.length <= 1) return;
-    try {
-      const data: Stored = { messages, leadEmailed, ts: Date.now() };
-      localStorage.setItem(storageKey, JSON.stringify(data));
-    } catch {
-      /* ignora cota/erros de storage */
-    }
-  }, [messages, leadEmailed, status, streamText, storageKey]);
 
   // Auto-scroll para a última mensagem / token.
   useEffect(() => {
@@ -220,11 +173,6 @@ export default function ChatWidget({ strings, locale }: Props) {
     setStatus('idle');
     setLeadEmailed(false);
     setLeadJustCaptured(false);
-    try {
-      localStorage.removeItem(storageKey);
-    } catch {
-      /* ignora */
-    }
   };
 
   const onInputKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
