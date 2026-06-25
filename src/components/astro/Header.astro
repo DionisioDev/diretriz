@@ -147,6 +147,12 @@ const homePath = getLocalizedPath('home', locale);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') setOpen(false);
     });
+    // Fecha ao tocar/clicar fora do painel (mobile)
+    document.addEventListener('click', (e) => {
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      const target = e.target as Node;
+      if (!panel.contains(target) && !toggle.contains(target)) setOpen(false);
+    });
     // Fecha se a tela voltar pro desktop
     window.matchMedia('(min-width: 981px)').addEventListener('change', (e) => {
       if (e.matches) setOpen(false);

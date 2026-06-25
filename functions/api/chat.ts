@@ -20,7 +20,7 @@
  *
  * Sem o binding AI o chat ainda responde (pedindo e-mail), apenas não usa IA.
  */
-import { sendLeadEmail, escapeHtml, type EmailEnv } from '../_shared/email';
+import { sendLeadEmail, escapeHtml, wrapEmail, fieldsTable, FONT, type EmailEnv } from '../_shared/email';
 import {
   REPLY_MODEL,
   replySystemPrompt,
@@ -105,33 +105,25 @@ function leadEmailHtml(lead: Lead, history: ChatMessage[], locale: string): stri
   const transcript = history
     .map(
       (m) =>
-        `<p style="margin:0 0 8px"><strong style="color:${
-          m.role === 'user' ? '#2563EB' : '#0B1220'
-        }">${m.role === 'user' ? 'Visitante' : 'Assistente'}:</strong> ${escapeHtml(m.content)}</p>`,
+        `<p style="margin:0 0 9px;font-family:${FONT};font-size:13px;line-height:1.55;color:#4B5468">
+          <strong style="color:${m.role === 'user' ? '#2563EB' : '#0B1220'}">${
+          m.role === 'user' ? 'Visitante' : 'Assistente'
+        }:</strong> ${escapeHtml(m.content)}</p>`,
     )
     .join('');
 
-  return `
-    <div style="font-family:system-ui,sans-serif;max-width:600px">
-      <h2 style="color:#2563EB;margin:0 0 4px">Novo lead — chat com IA</h2>
-      <p style="color:#4B5468;margin:0 0 20px;font-size:14px">Qualificado pelo assistente em diretriztecnologia.com.br</p>
-      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:24px">
-        ${rows
-          .map(
-            ([k, v]) => `<tr>
-              <td style="padding:8px 12px;background:#F1F5FB;font-weight:600;color:#0B1220;width:120px;vertical-align:top">${escapeHtml(
-                k,
-              )}</td>
-              <td style="padding:8px 12px;color:#0B1220;border-bottom:1px solid #EEF4FC;white-space:pre-wrap">${escapeHtml(
-                v,
-              )}</td>
-            </tr>`,
-          )
-          .join('')}
-      </table>
-      <h3 style="color:#0B1220;font-size:14px;margin:0 0 8px">Transcrição</h3>
-      <div style="font-size:13px;color:#4B5468;background:#FAFBFD;border:1px solid #EEF4FC;border-radius:10px;padding:14px">${transcript}</div>
+  const body = `${fieldsTable(rows)}
+    <div style="margin-top:26px">
+      <div style="font-family:${FONT};font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#8A93A6;margin:0 0 10px">Transcrição da conversa</div>
+      <div style="background:#F8FAFE;border:1px solid #EEF3FB;border-radius:12px;padding:14px 16px">${transcript}</div>
     </div>`;
+
+  return wrapEmail({
+    kicker: 'NOVO LEAD',
+    title: 'Lead qualificado pelo chat',
+    subtitle: 'O assistente de IA capturou este contato em diretriztecnologia.com.br',
+    bodyHtml: body,
+  });
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {

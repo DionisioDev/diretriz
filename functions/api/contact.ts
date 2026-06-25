@@ -5,7 +5,7 @@
  * Body JSON: { name, company?, email, topics?: string[], message?, locale?, website? }
  *   `website` é honeypot anti-bot (deve vir vazio).
  */
-import { sendLeadEmail, escapeHtml, type EmailEnv } from '../_shared/email';
+import { sendLeadEmail, wrapEmail, fieldsTable, type EmailEnv } from '../_shared/email';
 
 interface Env extends EmailEnv {}
 
@@ -59,25 +59,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     ['Idioma', body.locale === 'en' ? 'EN' : 'PT'],
   ];
 
-  const html = `
-    <div style="font-family:system-ui,sans-serif;max-width:560px">
-      <h2 style="color:#2563EB;margin:0 0 4px">Novo lead — formulário do site</h2>
-      <p style="color:#4B5468;margin:0 0 20px;font-size:14px">Recebido via diretriztecnologia.com.br</p>
-      <table style="width:100%;border-collapse:collapse;font-size:14px">
-        ${rows
-          .map(
-            ([k, v]) => `<tr>
-              <td style="padding:8px 12px;background:#F1F5FB;font-weight:600;color:#0B1220;width:130px;vertical-align:top">${escapeHtml(
-                k,
-              )}</td>
-              <td style="padding:8px 12px;color:#0B1220;border-bottom:1px solid #EEF4FC;white-space:pre-wrap">${escapeHtml(
-                v,
-              )}</td>
-            </tr>`,
-          )
-          .join('')}
-      </table>
-    </div>`;
+  const html = wrapEmail({
+    kicker: 'NOVO LEAD',
+    title: 'Lead pelo formulário do site',
+    subtitle: 'Recebido via diretriztecnologia.com.br',
+    bodyHtml: fieldsTable(rows),
+  });
 
   const sent = await sendLeadEmail(context.env, {
     subject: `Lead do site — ${name}${company ? ` (${company})` : ''}`,

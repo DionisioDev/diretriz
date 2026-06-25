@@ -96,7 +96,7 @@ npx wrangler pages dev dist --ai AI --binding RESEND_API_KEY=<sua-chave>
 | `functions/_shared/ratelimit.ts` | Rate-limit por IP (binding nativo `CHAT_LIMITER` ou KV `CHAT_RL`) |
 | `functions/api/contact.ts` | Recebe o formulário e envia o lead |
 | `functions/_shared/email.ts` | Helper Resend (compartilhado) |
-| `src/components/react/ChatWidget/` | Widget flutuante (ilha React): lê o SSE, persiste a conversa (localStorage 24h) |
+| `src/components/react/ChatWidget/` | Widget flutuante (ilha React): lê o SSE; recomeça a cada reload (sem persistência) |
 | `src/components/react/ContactForm/` | Formulário (ilha React) |
 
 > Tudo em `functions/` é empacotado pela Cloudflare no deploy e **não** entra no `astro build`.
