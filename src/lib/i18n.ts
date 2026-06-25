@@ -160,6 +160,15 @@ export interface SiteContent {
     open: string;
     close: string;
     newChat: string;
+    leadCta: string;
+    formTitle: string;
+    formName: string;
+    formEmail: string;
+    formPhone: string;
+    formSubmit: string;
+    formCancel: string;
+    formPrivacy: string;
+    formError: string;
   };
 }
 
@@ -362,13 +371,22 @@ const content: Record<Locale, SiteContent> = {
         'Olá! Que desafio trouxe você até aqui? Pode ser um produto pra criar, um processo pra automatizar, ou uma ideia ainda tomando forma. Conta em poucas palavras — a gente entende o contexto e já aponta os próximos passos.',
       placeholder: 'Escreva sua mensagem…',
       send: 'Enviar',
-      disclaimer: 'Assistente com IA. O que você contar vira um lead para o time da Diretriz.',
+      disclaimer: 'Assistente com IA para entender seu desafio. Seus dados de contato você deixa no formulário — não passam pela IA.',
       error: 'Algo falhou aqui. Tenta de novo, ou escreve direto pra diretriztecnologia@gmail.com.',
       sent: 'Demanda registrada! O time da Diretriz já recebeu e responde em até 1 dia útil.',
       retry: 'Tentar de novo',
       open: 'Abrir chat',
       close: 'Fechar chat',
       newChat: 'Nova conversa',
+      leadCta: 'Deixar meus dados',
+      formTitle: 'Deixar contato',
+      formName: 'Seu nome',
+      formEmail: 'Seu e-mail',
+      formPhone: 'Telefone (opcional)',
+      formSubmit: 'Enviar para a Diretriz',
+      formCancel: 'Voltar ao chat',
+      formPrivacy: 'Enviado direto ao time — seus dados não passam pela IA.',
+      formError: 'Confira o nome e um e-mail válido.',
     },
   },
   en: {
@@ -569,13 +587,22 @@ const content: Record<Locale, SiteContent> = {
         "Hi there! What challenge brought you here? It could be a product to build, a process to automate, or an idea still taking shape. Tell me in a few words — we'll understand the context and point you to the next steps.",
       placeholder: 'Write your message…',
       send: 'Send',
-      disclaimer: "AI assistant. What you share becomes a lead for the Diretriz team.",
+      disclaimer: 'AI assistant to understand your challenge. You leave your contact details in the form — they never go through the AI.',
       error: 'Something failed here. Try again, or write straight to diretriztecnologia@gmail.com.',
       sent: "Got it! The Diretriz team has received your request and will reply within 1 business day.",
       retry: 'Try again',
       open: 'Open chat',
       close: 'Close chat',
       newChat: 'New chat',
+      leadCta: 'Leave my details',
+      formTitle: 'Leave your contact',
+      formName: 'Your name',
+      formEmail: 'Your email',
+      formPhone: 'Phone (optional)',
+      formSubmit: 'Send to Diretriz',
+      formCancel: 'Back to chat',
+      formPrivacy: 'Sent straight to the team — your data never goes through the AI.',
+      formError: 'Please check your name and a valid email.',
     },
   },
 };
