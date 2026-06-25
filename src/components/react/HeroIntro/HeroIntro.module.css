@@ -88,17 +88,47 @@
    ============================================================ */
 @media (max-width: 980px) {
   /* O canvas do avião deixa de ser full-bleed atrás do texto e passa a ocupar
-     um bloco em fluxo no topo do hero — seu próprio palco. O texto flui logo
-     abaixo, sem sobreposição. A animação do avião não muda: ele voa e pousa
-     dentro deste palco, cuja dimensão o canvas mede via getBoundingClientRect. */
+     um bloco em fluxo no hero — seu próprio palco. A animação não muda: o avião
+     voa e pousa dentro deste palco, cuja dimensão o canvas mede via
+     getBoundingClientRect.
+     Pilha mobile: kicker → título → subtítulo → AVIÃO → botões. Como o avião
+     (.planeBg) é irmão de .copy (não filho), usamos display:contents em .copy
+     para promover seus filhos a itens do grid .hero__inner e então intercalar o
+     avião entre o subtítulo e os botões via `order`. O espaçamento do texto
+     segue vindo das margens dos próprios elementos (o grid usa gap:0 no mobile —
+     ver Hero.astro), então a tipografia não muda. */
+  .copy {
+    display: contents;
+  }
+  .kicker {
+    order: 1;
+  }
+  .display {
+    order: 2;
+  }
+  .sub {
+    order: 3;
+  }
   .planeBg {
+    order: 4;
     position: relative;
     top: auto;
     bottom: auto;
     left: auto;
     width: 100%;
     margin-left: 0;
-    height: clamp(250px, 40vh, 320px);
+    /* um pouco menor que antes (era clamp(250px, 40vh, 320px)) — como o avião
+       escala por min(W, H) e aqui a altura é o menor lado, encolher o palco
+       encolhe o avião proporcionalmente. */
+    height: clamp(200px, 34vh, 270px);
+    /* recolhe o palco em direção ao texto, comendo a folga transparente no topo
+       do canvas (o avião é desenhado centralizado, longe da borda superior). */
+    margin-top: -64px;
+    /* afasta um pouco os botões logo abaixo do avião. */
+    margin-bottom: 16px;
+  }
+  .ctas {
+    order: 5;
   }
 }
 

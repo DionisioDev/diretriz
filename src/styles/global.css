@@ -49,6 +49,32 @@ a {
   transition: color var(--motion-fast) var(--ease);
 }
 
+/* ============================================================
+   Material Symbols (ícones) — @font-face vem do <head> (Base.astro),
+   subsetado só com os glifos usados. Esta é a classe utilitária que
+   ativa as ligaduras (o texto "menu" vira o ícone) e a cor via currentColor.
+   ============================================================ */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+
 /* Acessibilidade — escondido visualmente, lido por leitores de tela e crawlers */
 .sr-only {
   position: absolute;
