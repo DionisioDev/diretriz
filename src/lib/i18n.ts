@@ -368,7 +368,7 @@ const content: Record<Locale, SiteContent> = {
       title: 'Assistente Diretriz',
       subtitle: 'Conte seu desafio — a gente aponta o caminho.',
       greeting:
-        'Olá! Que desafio trouxe você até aqui? Pode ser um produto pra criar, um processo pra automatizar, ou uma ideia ainda tomando forma. Conta em poucas palavras — a gente entende o contexto e já aponta os próximos passos.',
+        'Olá! Qual desafio trouxe você aqui — um produto pra criar, um processo pra automatizar? Conta em poucas palavras.',
       placeholder: 'Escreva sua mensagem…',
       send: 'Enviar',
       disclaimer: 'Assistente com IA para entender seu desafio. Seus dados de contato você deixa no formulário — não passam pela IA.',
@@ -584,7 +584,7 @@ const content: Record<Locale, SiteContent> = {
       title: 'Diretriz Assistant',
       subtitle: "Tell us your challenge — we'll point the way.",
       greeting:
-        "Hi there! What challenge brought you here? It could be a product to build, a process to automate, or an idea still taking shape. Tell me in a few words — we'll understand the context and point you to the next steps.",
+        'Hi! What brought you here — a product to build, a process to automate? Tell me in a few words.',
       placeholder: 'Write your message…',
       send: 'Send',
       disclaimer: 'AI assistant to understand your challenge. You leave your contact details in the form — they never go through the AI.',
