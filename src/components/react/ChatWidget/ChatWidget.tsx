@@ -14,6 +14,7 @@ interface ChatStrings {
   retry: string;
   open: string;
   close: string;
+  newChat: string;
 }
 
 interface Props {
@@ -29,23 +30,37 @@ interface Msg {
 
 type Status = 'idle' | 'sending' | 'error';
 
+interface Stored {
+  messages: Msg[];
+  leadEmailed: boolean;
+  ts: number;
+}
+
+const STORAGE_PREFIX = 'diretriz.chat.v1';
+const MAX_AGE = 24 * 60 * 60 * 1000; // 24h
+
 const fmtTime = (d: Date) =>
   `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 
 /**
  * ChatWidget — assistente flutuante de qualificação de leads.
  *
- * Conversa com a Pages Function `/api/chat` (Cloudflare Workers AI). Quando a
- * função sinaliza `leadCaptured`, mostramos a confirmação e marcamos leadEmailed
- * para não reenviar o e-mail a cada mensagem seguinte.
+ * Conversa com a Pages Function `/api/chat` (Workers AI) em STREAMING: lê o corpo
+ * SSE e renderiza a resposta token a token. Quando o servidor sinaliza
+ * `lead.captured`, mostra a confirmação e marca `leadEmailed` (não reenvia).
+ * A conversa é persistida em localStorage (por idioma, expira em 24h).
  */
 export default function ChatWidget({ strings, locale }: Props) {
+  const storageKey = `${STORAGE_PREFIX}.${locale}`;
+
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>(() => [
     { role: 'assistant', content: strings.greeting, time: fmtTime(new Date()) },
   ]);
   const [input, setInput] = useState('');
   const [status, setStatus] = useState<Status>('idle');
+  // Texto da resposta em streaming (null = sem stream; '' = aguardando 1º token).
+  const [streamText, setStreamText] = useState<string | null>(null);
   const [leadEmailed, setLeadEmailed] = useState(false);
   const [leadJustCaptured, setLeadJustCaptured] = useState(false);
 
@@ -53,14 +68,50 @@ export default function ChatWidget({ strings, locale }: Props) {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll para a última mensagem
+  // Hidrata a conversa salva (client-only; roda uma vez).
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as Stored;
+      if (!parsed || !Array.isArray(parsed.messages) || typeof parsed.ts !== 'number') return;
+      if (Date.now() - parsed.ts > MAX_AGE) {
+        localStorage.removeItem(storageKey);
+        return;
+      }
+      const valid = parsed.messages.filter(
+        (m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string',
+      );
+      if (valid.length > 0) {
+        setMessages(valid.map((m) => ({ role: m.role, content: m.content, time: m.time || '' })));
+        setLeadEmailed(parsed.leadEmailed === true);
+      }
+    } catch {
+      /* storage indisponível/corrompido — segue com o greeting */
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persiste a conversa concluída (não durante o streaming, e só se houve interação).
+  useEffect(() => {
+    if (status === 'sending' || streamText !== null) return;
+    if (messages.length <= 1) return;
+    try {
+      const data: Stored = { messages, leadEmailed, ts: Date.now() };
+      localStorage.setItem(storageKey, JSON.stringify(data));
+    } catch {
+      /* ignora cota/erros de storage */
+    }
+  }, [messages, leadEmailed, status, streamText, storageKey]);
+
+  // Auto-scroll para a última mensagem / token.
   useEffect(() => {
     if (open && scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, status, open]);
+  }, [messages, streamText, status, open]);
 
-  // Foco no input ao abrir; Esc fecha
+  // Foco no input ao abrir.
   useEffect(() => {
     if (open) {
       const t = setTimeout(() => inputRef.current?.focus(), 120);
@@ -68,6 +119,7 @@ export default function ChatWidget({ strings, locale }: Props) {
     }
   }, [open]);
 
+  // Esc fecha.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && open) setOpen(false);
@@ -76,39 +128,109 @@ export default function ChatWidget({ strings, locale }: Props) {
     return () => document.removeEventListener('keydown', onKey);
   }, [open]);
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || status === 'sending') return;
-
-    const next: Msg[] = [...messages, { role: 'user', content: text, time: fmtTime(new Date()) }];
-    setMessages(next);
-    setInput('');
+  /** Faz a requisição e consome o stream SSE, montando a resposta token a token. */
+  const streamReply = async (convo: Msg[]) => {
     setStatus('sending');
+    setStreamText('');
+    let acc = '';
+    let captured = false;
 
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next, locale, leadEmailed }),
+        body: JSON.stringify({
+          messages: convo.map((m) => ({ role: m.role, content: m.content })),
+          locale,
+          leadEmailed,
+        }),
       });
-      if (!res.ok) throw new Error('bad status');
-      const data = (await res.json()) as { reply?: string; leadCaptured?: boolean };
-      const reply = (data.reply || '').trim();
-      setMessages((m) => [...m, { role: 'assistant', content: reply || strings.error, time: fmtTime(new Date()) }]);
-      if (data.leadCaptured && !leadEmailed) {
+      if (!res.ok || !res.body) throw new Error('bad status');
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let finished = false;
+
+      while (!finished) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data:')) continue;
+          const payload = trimmed.slice(5).trim();
+          if (!payload) continue;
+          if (payload === '[DONE]') {
+            finished = true;
+            continue;
+          }
+          try {
+            const ev = JSON.parse(payload) as { delta?: string; lead?: { captured?: boolean } };
+            if (typeof ev.delta === 'string') {
+              acc += ev.delta;
+              setStreamText(acc);
+            } else if (ev.lead) {
+              captured = ev.lead.captured === true;
+            }
+          } catch {
+            /* linha SSE parcial — ignora */
+          }
+        }
+      }
+
+      setStreamText(null);
+      setMessages((m) => [
+        ...m,
+        { role: 'assistant', content: acc.trim() || strings.error, time: fmtTime(new Date()) },
+      ]);
+      if (captured && !leadEmailed) {
         setLeadEmailed(true);
         setLeadJustCaptured(true);
       }
       setStatus('idle');
     } catch {
+      setStreamText(null);
       setStatus('error');
+    }
+  };
+
+  const send = () => {
+    const text = input.trim();
+    if (!text || status === 'sending') return;
+    const convo: Msg[] = [...messages, { role: 'user', content: text, time: fmtTime(new Date()) }];
+    setMessages(convo);
+    setInput('');
+    void streamReply(convo);
+  };
+
+  // Reenvia a última pergunta (a conversa já termina numa mensagem do usuário).
+  const retry = () => {
+    if (status === 'sending') return;
+    if (messages[messages.length - 1]?.role !== 'user') return;
+    void streamReply(messages);
+  };
+
+  const resetChat = () => {
+    setMessages([{ role: 'assistant', content: strings.greeting, time: fmtTime(new Date()) }]);
+    setInput('');
+    setStreamText(null);
+    setStatus('idle');
+    setLeadEmailed(false);
+    setLeadJustCaptured(false);
+    try {
+      localStorage.removeItem(storageKey);
+    } catch {
+      /* ignora */
     }
   };
 
   const onInputKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      void send();
+      send();
     }
   };
 
@@ -156,11 +278,27 @@ export default function ChatWidget({ strings, locale }: Props) {
               <span className={styles.headerSub}>{strings.subtitle}</span>
             </div>
           </div>
-          <button type="button" className={styles.headerClose} aria-label={strings.close} onClick={() => setOpen(false)}>
-            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-              <path d="M5 5 L15 15 M15 5 L5 15" />
-            </svg>
-          </button>
+          <div className={styles.headerActions}>
+            {messages.length > 1 && (
+              <button
+                type="button"
+                className={styles.headerAction}
+                aria-label={strings.newChat}
+                title={strings.newChat}
+                onClick={resetChat}
+              >
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3.5 10a6.5 6.5 0 1 1 1.9 4.6" />
+                  <path d="M3.2 14.8 V10.8 H7.2" />
+                </svg>
+              </button>
+            )}
+            <button type="button" className={styles.headerClose} aria-label={strings.close} onClick={() => setOpen(false)}>
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+                <path d="M5 5 L15 15 M15 5 L5 15" />
+              </svg>
+            </button>
+          </div>
         </header>
 
         <div className={styles.messages} ref={scrollRef} aria-live="polite">
@@ -178,20 +316,30 @@ export default function ChatWidget({ strings, locale }: Props) {
                 <div className={`${styles.bubble} ${m.role === 'user' ? styles.user : styles.assistant}`}>
                   {m.content}
                 </div>
-                <span className={styles.time}>{m.time}</span>
+                {m.time && <span className={styles.time}>{m.time}</span>}
               </div>
             </div>
           ))}
 
-          {status === 'sending' && (
+          {/* Resposta em streaming */}
+          {streamText !== null && (
             <div className={`${styles.row} ${styles.rowAssistant}`}>
               <span className={styles.msgAvatar} aria-hidden="true">
                 <img src="/assets/logo-mark.png" width={15} height={14} alt="" decoding="async" />
               </span>
-              <div className={`${styles.bubble} ${styles.assistant} ${styles.typing}`} aria-label="…">
-                <span />
-                <span />
-                <span />
+              <div className={styles.bubbleWrap}>
+                {streamText === '' ? (
+                  <div className={`${styles.bubble} ${styles.assistant} ${styles.typing}`} aria-label="…">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                ) : (
+                  <div className={`${styles.bubble} ${styles.assistant}`}>
+                    {streamText}
+                    <span className={styles.caret} aria-hidden="true" />
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -201,7 +349,7 @@ export default function ChatWidget({ strings, locale }: Props) {
           {status === 'error' && (
             <div className={styles.errorRow}>
               <span>{strings.error}</span>
-              <button type="button" onClick={() => void send()} className={styles.retry}>
+              <button type="button" onClick={retry} className={styles.retry}>
                 {strings.retry}
               </button>
             </div>
@@ -222,7 +370,7 @@ export default function ChatWidget({ strings, locale }: Props) {
           <button
             type="button"
             className={styles.sendBtn}
-            onClick={() => void send()}
+            onClick={send}
             disabled={!input.trim() || status === 'sending'}
             aria-label={strings.send}
           >
