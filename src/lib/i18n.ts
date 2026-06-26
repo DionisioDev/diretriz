@@ -182,7 +182,7 @@ const content: Record<Locale, SiteContent> = {
       cta: 'Falar com a Diretriz',
     },
     hero: {
-      kicker: '/ Diretriz Tecnologia',
+      kicker: '',
       tagline: ['tecnologia', 'na direção', 'do seu negócio.'],
       sub: '',
       ctaPrimary: 'Falar com a Diretriz',
@@ -206,7 +206,7 @@ const content: Record<Locale, SiteContent> = {
         {
           num: '01',
           title: 'Produtos sob medida',
-          desc: 'Construímos produtos digitais do zero — modernos, do seu tamanho, modelados para resolver o seu problema, não o do mercado.',
+          desc: 'Construímos produtos digitais do zero, modernos, do seu tamanho, modelados para resolver o seu problema, não o do mercado.',
           bullets: [
             'Soluções escaláveis e modernas',
             'Tecnologias atuais e bem testadas',
@@ -250,7 +250,7 @@ const content: Record<Locale, SiteContent> = {
       titleAccent: 'juntos',
       titleEnd: '.',
       copy:
-        'As possibilidades com inteligência artificial crescem todo dia, e cada negócio aproveita de um jeito. Por isso a gente não chega com solução pronta — chega com perguntas. A conversa começa entendendo o seu desafio, enxergando onde a IA encaixa de verdade e imaginando o que dá pra construir a partir daí.',
+        'As possibilidades com inteligência artificial crescem todo dia, e cada negócio aproveita de um jeito. Por isso a gente não chega com solução pronta. Chega com perguntas. A conversa começa entendendo o seu desafio, enxergando onde a IA encaixa de verdade e imaginando o que dá pra construir a partir daí.',
       cta: 'Vamos conversar sobre IA',
       layerLabel: 'EM EXPLORAÇÃO',
       statusLabel: 'explorando',
@@ -264,7 +264,7 @@ const content: Record<Locale, SiteContent> = {
         { n: '01', title: 'Entendemos', desc: 'Discovery primeiro. Não escrevemos código antes de mapear o problema de verdade.' },
         { n: '02', title: 'Planejamos', desc: 'Você vê escopo, marcos e o porquê de cada decisão. Sem caixa-preta.' },
         { n: '03', title: 'Construímos', desc: 'Stack moderna, código limpo, escolhas explicáveis.' },
-        { n: '04', title: 'Entregamos', desc: 'Em produção, acompanhado — não te deixamos sozinho na hora do uso.' },
+        { n: '04', title: 'Entregamos', desc: 'Em produção, acompanhado. Não te deixamos sozinho na hora do uso.' },
         { n: '05', title: 'Evoluímos', desc: 'Iteração contínua junto com seu time, não para ele.' },
       ],
     },
@@ -353,8 +353,8 @@ const content: Record<Locale, SiteContent> = {
         {
           title: 'Idioma',
           links: [
-            { label: 'PT — Português', href: '/' },
-            { label: 'EN — English', href: '/en/' },
+            { label: 'Português (PT)', href: '/' },
+            { label: 'English (EN)', href: '/en/' },
           ],
         },
       ],
@@ -366,14 +366,14 @@ const content: Record<Locale, SiteContent> = {
     chat: {
       launcher: 'Vamos trocar uma ideia?',
       title: 'Assistente Diretriz',
-      subtitle: 'Conte seu desafio — a gente aponta o caminho.',
+      subtitle: 'Conte seu desafio, a gente aponta o caminho.',
       greeting:
-        'Olá! Qual desafio trouxe você aqui — um produto pra criar, um processo pra automatizar? Conta em poucas palavras.',
+        'Olá! Qual desafio trouxe você aqui: um produto pra criar, um processo pra automatizar? Conta em poucas palavras.',
       placeholder: 'Escreva sua mensagem…',
       send: 'Enviar',
-      disclaimer: 'Assistente com IA para entender seu desafio. Seus dados de contato você deixa no formulário — não passam pela IA.',
+      disclaimer: 'Assistente com IA para entender seu desafio. Seus dados de contato você deixa no formulário, e não passam pela IA.',
       error: 'Algo falhou aqui. Tenta de novo, ou escreve direto pra diretriztecnologia@gmail.com.',
-      sent: 'Pronto, recebido! O time da Diretriz responde em até 1 dia útil — e, se quiser, é só continuar a conversa por aqui.',
+      sent: 'Pronto, recebido! O time da Diretriz responde em até 1 dia útil. E, se quiser, é só continuar a conversa por aqui.',
       retry: 'Tentar de novo',
       open: 'Abrir chat',
       close: 'Fechar chat',
@@ -385,7 +385,7 @@ const content: Record<Locale, SiteContent> = {
       formPhone: 'Telefone (opcional)',
       formSubmit: 'Enviar para a Diretriz',
       formCancel: 'Voltar ao chat',
-      formPrivacy: 'Enviado direto ao time — seus dados não passam pela IA.',
+      formPrivacy: 'Enviado direto ao time. Seus dados não passam pela IA.',
       formError: 'Confira o nome e um e-mail válido.',
     },
   },
@@ -398,7 +398,7 @@ const content: Record<Locale, SiteContent> = {
       cta: 'Talk to Diretriz',
     },
     hero: {
-      kicker: '/ Diretriz Tecnologia',
+      kicker: '',
       tagline: ['technology', 'in the direction', 'of your business.'],
       sub: '',
       ctaPrimary: 'Talk to Diretriz',
@@ -422,7 +422,7 @@ const content: Record<Locale, SiteContent> = {
         {
           num: '01',
           title: 'Custom products',
-          desc: 'We build digital products from scratch — modern, right-sized, modeled to solve your problem, not the market average.',
+          desc: 'We build digital products from scratch, modern, right-sized, modeled to solve your problem, not the market average.',
           bullets: [
             'Scalable and modern solutions',
             'Current and well-tested technologies',
@@ -466,7 +466,7 @@ const content: Record<Locale, SiteContent> = {
       titleAccent: 'together',
       titleEnd: '.',
       copy:
-        "The possibilities with artificial intelligence grow every day, and every business taps into them differently. That's why we don't show up with a ready-made solution — we show up with questions. The conversation starts by understanding your challenge, seeing where AI truly fits, and imagining what you can build from there.",
+        "The possibilities with artificial intelligence grow every day, and every business taps into them differently. That's why we don't show up with a ready-made solution. We show up with questions. The conversation starts by understanding your challenge, seeing where AI truly fits, and imagining what you can build from there.",
       cta: "Let's talk about AI",
       layerLabel: 'EXPLORING',
       statusLabel: 'exploring',
@@ -480,7 +480,7 @@ const content: Record<Locale, SiteContent> = {
         { n: '01', title: 'We understand', desc: "Discovery first. We don't write code before truly mapping the problem." },
         { n: '02', title: 'We plan', desc: 'You see scope, milestones and the why behind each decision. No black box.' },
         { n: '03', title: 'We build', desc: 'Modern stack, clean code, choices we can explain.' },
-        { n: '04', title: 'We deliver', desc: "In production, supported — we don't leave you alone at go-live." },
+        { n: '04', title: 'We deliver', desc: "In production, supported. We don't leave you alone at go-live." },
         { n: '05', title: 'We evolve', desc: 'Continuous iteration with your team, not just for it.' },
       ],
     },
@@ -569,8 +569,8 @@ const content: Record<Locale, SiteContent> = {
         {
           title: 'Language',
           links: [
-            { label: 'PT — Português', href: '/' },
-            { label: 'EN — English', href: '/en/' },
+            { label: 'Português (PT)', href: '/' },
+            { label: 'English (EN)', href: '/en/' },
           ],
         },
       ],
@@ -582,14 +582,14 @@ const content: Record<Locale, SiteContent> = {
     chat: {
       launcher: "Got an idea? Let's chat",
       title: 'Diretriz Assistant',
-      subtitle: "Tell us your challenge — we'll point the way.",
+      subtitle: "Tell us your challenge, we'll point the way.",
       greeting:
-        'Hi! What brought you here — a product to build, a process to automate? Tell me in a few words.',
+        'Hi! What brought you here: a product to build, a process to automate? Tell me in a few words.',
       placeholder: 'Write your message…',
       send: 'Send',
-      disclaimer: 'AI assistant to understand your challenge. You leave your contact details in the form — they never go through the AI.',
+      disclaimer: 'AI assistant to understand your challenge. You leave your contact details in the form, and they never go through the AI.',
       error: 'Something failed here. Try again, or write straight to diretriztecnologia@gmail.com.',
-      sent: "All set — got it! The Diretriz team will reply within 1 business day, and you're welcome to keep chatting here.",
+      sent: "All set, got it! The Diretriz team will reply within 1 business day, and you're welcome to keep chatting here.",
       retry: 'Try again',
       open: 'Open chat',
       close: 'Close chat',
@@ -601,7 +601,7 @@ const content: Record<Locale, SiteContent> = {
       formPhone: 'Phone (optional)',
       formSubmit: 'Send to Diretriz',
       formCancel: 'Back to chat',
-      formPrivacy: 'Sent straight to the team — your data never goes through the AI.',
+      formPrivacy: 'Sent straight to the team. Your data never goes through the AI.',
       formError: 'Please check your name and a valid email.',
     },
   },

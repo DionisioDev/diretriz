@@ -116,10 +116,10 @@ export default function ContactForm({ strings, locale }: Props) {
 
   // Fallback mailto: pré-preenche o que a pessoa já digitou.
   const mailtoHref = (() => {
-    const subject = `Contato pelo site — ${topic}`;
+    const subject = `Contato pelo site: ${topic}`;
     const body = [
-      `Nome: ${form.name || '—'}`,
-      `Empresa: ${form.company || '—'}`,
+      `Nome: ${form.name || '-'}`,
+      `Empresa: ${form.company || '-'}`,
       `Assunto: ${topic}`,
       '',
       form.message || '',

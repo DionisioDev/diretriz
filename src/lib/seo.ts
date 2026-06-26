@@ -58,7 +58,7 @@ export function organizationJsonLd() {
     name: 'Diretriz Tecnologia',
     url: SITE_URL,
     logo: `${SITE_URL}/og/logo.png`,
-    description: 'Soluções em tecnologia sob medida — desenvolvimento, automação e IA.',
+    description: 'Soluções em tecnologia sob medida: desenvolvimento, automação e IA.',
     sameAs: [],
   };
 }
