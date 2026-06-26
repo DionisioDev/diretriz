@@ -59,14 +59,17 @@ Free tier do Workers AI cobre bem o volume de um site institucional. *Não há c
 
 > **Importante com billing ativo:** ao passar do free tier, o Workers AI **cobra** (não para mais sozinho). O teto diário abaixo é o que recoloca esse "freio" no código.
 
-O endpoint já aplica caps em código sem precisar de nada (tamanho de mensagem, nº de mensagens, máximo de turnos por conversa, `max_tokens` curto). Para os limites **globais** (que valem entre todas as visitas), crie **um KV namespace** e bind como **`CHAT_RL`** — é o que habilita:
+O endpoint já aplica caps em código sem precisar de nada (tamanho de mensagem, nº de mensagens, máximo de turnos por conversa, `max_tokens` curto, teto de payload). Para os limites **globais** (que valem entre todas as visitas), crie **um KV namespace** e bind como **`CHAT_RL`** — é o que habilita:
 
 - **Teto diário de IA** (`functions/_shared/budget.ts`): acumula uma estimativa de *neurons* por dia; ao chegar a **~8.000** (de 10.000/dia grátis), o chat para de chamar a IA e cai no fallback (pede e-mail).
-- **Rate-limit por IP**: janela de 60s (~12 msg/IP).
+- **Teto diário de e-mails** (`functions/_shared/email-budget.ts`): ~100 e-mails/dia; protege a cota do Resend.
+- **Rate-limit por IP**: chat ~12 msg/60s; `/api/contact` 5 envios/60s (buckets isolados).
 
-Como criar: **Workers & Pages → KV → Create namespace** → no projeto Pages, **Settings → Bindings → Add → KV namespace**, nome **`CHAT_RL`**. (Opcional: rate-limit por IP também pode usar o binding nativo **`CHAT_LIMITER`** em vez do KV.)
+Como criar: **Workers & Pages → KV → Create namespace** → no projeto Pages, **Settings → Bindings → Add → KV namespace**, nome **`CHAT_RL`**. Adicione também o binding nativo **`CHAT_LIMITER`** (Rate Limiting) para rate-limit por IP mais robusto.
 
-> Sem `CHAT_RL`, o teto global **não é imposto** (o código permite, bom para dev local). Para a garantia de não estourar o free tier, o KV é necessário. Ajuste fino: `DAILY_NEURON_BUDGET` em `budget.ts`.
+> ⚠️ **Obrigatório em produção.** O chat agora é **fail-closed**: sem `CHAT_RL` **nem** `CHAT_LIMITER`, `/api/chat` **não chama a IA** (cai no fallback de e-mail), justamente para não rodar inferência paga sem teto de custo. Para testar a IA localmente sem KV, defina a var `CHAT_ALLOW_NO_LIMITER=1`. Ajuste fino: `DAILY_NEURON_BUDGET` em `budget.ts`, `MAX_EMAILS_DAY` em `email-budget.ts`.
+>
+> **Defesa de borda (recomendada, independe de KV):** crie **WAF → Rate limiting rules** no painel Cloudflare para os paths `/api/contact` e `/api/chat` (ex.: 10 req/min por IP → Block). Funciona mesmo sem o KV provisionado.
 
 ---
 
@@ -76,10 +79,11 @@ O `npm run dev` (Astro) **não** roda as Functions. Para testar o chat/form loca
 
 ```bash
 npm run build
-npx wrangler pages dev dist --ai AI --binding RESEND_API_KEY=<sua-chave>
-#   --ai AI                       injeta o binding de Workers AI (streaming real)
-#   --binding RESEND_API_KEY=...  habilita o envio do lead por e-mail
-#   --kv CHAT_RL                  (opcional) testa o fallback KV de rate-limit
+npx wrangler pages dev dist --ai AI --binding RESEND_API_KEY=<sua-chave> --binding CHAT_ALLOW_NO_LIMITER=1
+#   --ai AI                            injeta o binding de Workers AI (streaming real)
+#   --binding RESEND_API_KEY=...       habilita o envio do lead por e-mail
+#   --binding CHAT_ALLOW_NO_LIMITER=1  libera a IA local sem KV (fail-closed só em prod)
+#   --kv CHAT_RL                       (opcional) testa os tetos/rate-limit em KV de verdade
 ```
 
 - Sem a flag `--ai AI`, `/api/chat` cai no fallback (pede e-mail) — útil para testar a UI.
