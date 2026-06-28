@@ -419,6 +419,15 @@ export default function ChatWidget({ strings, locale }: Props) {
                 {strings.leadCta}
               </button>
             )}
+            {leadSent && (
+              <button type="button" className={styles.leadCta} onClick={resetChat}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M3.5 12a8.5 8.5 0 1 1 2.6 6.1" />
+                  <path d="M3 19.5V14h5.5" />
+                </svg>
+                {strings.newChat}
+              </button>
+            )}
             <div className={styles.composer}>
               <textarea
                 ref={inputRef}

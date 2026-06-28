@@ -38,6 +38,7 @@ interface ChatBody {
 const MAX_MESSAGES = 24;
 const MAX_LEN = 2000;
 const MAX_USER_TURNS = 30; // cap anti-abuso por conversa
+const WRAP_UP_AFTER_TURNS = 3; // a partir daqui o assistente conclui e convida ao formulário (sincroniza com o auto-abrir do form no widget)
 const MAX_BODY_BYTES = 32 * 1024; // teto de payload (rejeita corpo inflado antes do parse)
 
 const SSE_HEADERS = {
@@ -155,8 +156,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return oneShotSse(MSG.noAi[locale]);
   }
 
-  // A pessoa já deixou o contato? Ajusta o prompt para não repetir convite/confirmação.
-  const systemPrompt = replySystemPrompt(locale, { leadSent: body.leadSent === true });
+  // Sinais de fluxo: já deixou contato? já houve perguntas suficientes (~3 turnos)?
+  const leadSent = body.leadSent === true;
+  const systemPrompt = replySystemPrompt(locale, {
+    leadSent,
+    wrapUp: !leadSent && totalUserTurns >= WRAP_UP_AFTER_TURNS,
+  });
 
   const enc = new TextEncoder();
   const dec = new TextDecoder();
