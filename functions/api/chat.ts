@@ -19,11 +19,13 @@
  * Sem o binding AI o chat responde pedindo e-mail, apenas não usa IA.
  */
 import { REPLY_MODEL, replySystemPrompt, type ChatMessage, type Locale } from '../_shared/chat-ai';
-import { checkRate, type RateEnv } from '../_shared/ratelimit';
+import { checkRate, rateLimiterConfigured, type RateEnv } from '../_shared/ratelimit';
 import { overAiBudget, estimateNeurons, addNeurons } from '../_shared/budget';
 
 interface Env extends RateEnv {
   AI?: { run(model: string, input: unknown): Promise<unknown> };
+  /** Dev: '1' libera a IA mesmo sem limitador (CHAT_LIMITER/CHAT_RL) configurado. */
+  CHAT_ALLOW_NO_LIMITER?: string;
 }
 
 interface ChatBody {
@@ -34,6 +36,7 @@ interface ChatBody {
 const MAX_MESSAGES = 24;
 const MAX_LEN = 2000;
 const MAX_USER_TURNS = 30; // cap anti-abuso por conversa
+const MAX_BODY_BYTES = 32 * 1024; // teto de payload (rejeita corpo inflado antes do parse)
 
 const SSE_HEADERS = {
   'Content-Type': 'text/event-stream; charset=utf-8',
@@ -81,6 +84,11 @@ function oneShotSse(reply: string): Response {
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const len = parseInt(context.request.headers.get('content-length') || '0', 10);
+  if (len > MAX_BODY_BYTES) {
+    return json({ error: 'Conteúdo muito grande.' }, 413);
+  }
+
   let body: ChatBody;
   try {
     body = await context.request.json();
@@ -90,12 +98,27 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const locale: Locale = body.locale === 'en' ? 'en' : 'pt';
   const incoming = Array.isArray(body.messages) ? body.messages : [];
-  const history: ChatMessage[] = incoming
-    .filter((m) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string')
-    .slice(-MAX_MESSAGES)
-    .map((m) => ({ role: m.role, content: m.content.slice(0, MAX_LEN) }));
 
-  if (history.length === 0 || history[history.length - 1].role !== 'user' || !history[history.length - 1].content.trim()) {
+  // Reconstrói o histórico forçando alternância user→assistant→user… (anti-puppeting).
+  // O cliente controla todo o array `messages`, então NÃO confiamos no role 'assistant'
+  // como autoridade: ele só é aceito logo após um 'user'. Isso descarta falas de
+  // assistente forjadas para burlar o system prompt (jailbreak por prefill).
+  const sanitized: ChatMessage[] = [];
+  for (const m of incoming) {
+    if (!m || (m.role !== 'user' && m.role !== 'assistant') || typeof m.content !== 'string') continue;
+    const content = m.content.slice(0, MAX_LEN);
+    if (!content.trim()) continue;
+    const prev = sanitized[sanitized.length - 1];
+    if (!prev) {
+      if (m.role !== 'user') continue; // descarta 'assistant' no início (ex.: saudação)
+    } else if (prev.role === m.role) {
+      continue; // descarta turnos consecutivos do mesmo role (duplicado/puppeting)
+    }
+    sanitized.push({ role: m.role, content });
+  }
+  const history = sanitized.slice(-MAX_MESSAGES);
+
+  if (history.length === 0 || history[history.length - 1].role !== 'user') {
     return json({ error: 'Mensagem do usuário ausente.' }, 422);
   }
 
@@ -115,6 +138,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // Sem binding de IA: responde pedindo e-mail.
   const ai = context.env.AI;
   if (!ai) {
+    return oneShotSse(MSG.noAi[locale]);
+  }
+
+  // Fail-closed: sem NENHUM limitador (CHAT_LIMITER/CHAT_RL) não há teto de custo nem
+  // rate-limit efetivo. Não acionamos a IA paga — caímos no fallback de e-mail.
+  // Em dev, defina CHAT_ALLOW_NO_LIMITER=1 para testar a IA sem KV/binding.
+  if (!rateLimiterConfigured(context.env) && context.env.CHAT_ALLOW_NO_LIMITER !== '1') {
     return oneShotSse(MSG.noAi[locale]);
   }
 
@@ -168,10 +198,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         if (!replyText) send({ delta: MSG.error[locale] });
       }
 
-      // Contabiliza os neurons da resposta no orçamento do dia.
+      // Contabiliza os neurons da resposta no orçamento do dia. waitUntil garante a
+      // gravação mesmo que o cliente desconecte antes de o stream terminar (anti-TOCTOU
+      // parcial: o débito por conexões abortadas não se perde).
       if (replyText) {
         const replyIn = replySystemPrompt(locale).length + history.reduce((s, m) => s + m.content.length, 0);
-        await addNeurons(context.env, estimateNeurons(REPLY_MODEL, replyIn, replyText.length));
+        context.waitUntil(addNeurons(context.env, estimateNeurons(REPLY_MODEL, replyIn, replyText.length)));
       }
 
       controller.enqueue(enc.encode('data: [DONE]\n\n'));

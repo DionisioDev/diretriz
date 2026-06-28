@@ -73,24 +73,36 @@ export function fieldsTable(rows: [string, string][]): string {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse">${cells}</table>`;
 }
 
-/** Bloco de transcrição da conversa (contexto opcional do lead). */
+/**
+ * Bloco de transcrição da conversa (contexto opcional do lead).
+ *
+ * ATENÇÃO DE SEGURANÇA: tanto as falas `user` quanto `assistant` chegam do
+ * navegador do visitante (a conversa real NÃO é guardada no servidor), logo
+ * ambas podem ter sido adulteradas. As falas marcadas como "assistant" NÃO são
+ * prova de que a IA da Diretriz disse aquilo. Por isso o bloco leva um aviso
+ * fixo e a fala do assistente é rotulada como "Resposta exibida (gerada por IA)"
+ * em vez de "Assistente", para o time não tratar como compromisso oficial.
+ * O conteúdo continua passando por escapeHtml (evita injeção de HTML no e-mail).
+ */
 export function transcriptBlock(history: { role: string; content: string }[], heading: string): string {
   const items = history
     .filter((m) => m && typeof m.content === 'string' && m.content.trim())
-    .map(
-      (m) =>
-        `<p style="margin:0 0 9px;font-family:${FONT};font-size:13px;line-height:1.55;color:#4B5468">
-          <strong style="color:${m.role === 'user' ? '#2563EB' : '#0B1220'}">${
-          m.role === 'user' ? 'Visitante' : 'Assistente'
-        }:</strong> ${escapeHtml(m.content)}</p>`,
-    )
+    .map((m) => {
+      const isUser = m.role === 'user';
+      const label = isUser ? 'Visitante' : 'Resposta exibida (gerada por IA, não confiável como compromisso)';
+      return `<p style="margin:0 0 9px;font-family:${FONT};font-size:13px;line-height:1.55;color:#4B5468">
+          <strong style="color:${isUser ? '#2563EB' : '#8A93A6'}">${label}:</strong> ${escapeHtml(m.content)}</p>`;
+    })
     .join('');
   if (!items) return '';
   return `<div style="margin-top:26px">
     <div style="font-family:${FONT};font-size:11px;letter-spacing:0.07em;text-transform:uppercase;color:#8A93A6;margin:0 0 10px">${escapeHtml(
       heading,
     )}</div>
-    <div style="background:#F8FAFE;border:1px solid #EEF3FB;border-radius:12px;padding:14px 16px">${items}</div>
+    <div style="background:#F8FAFE;border:1px solid #EEF3FB;border-radius:12px;padding:14px 16px">
+      <p style="margin:0 0 12px;font-family:${FONT};font-size:12px;line-height:1.5;color:#B4540A;background:#FFF6ED;border:1px solid #FBE0C4;border-radius:8px;padding:9px 11px">Atenção: conteúdo enviado pelo navegador do visitante. Pode ter sido adulterado e não representa compromisso da Diretriz. Trate as falas "geradas por IA" apenas como contexto, nunca como promessa oficial.</p>
+      ${items}
+    </div>
   </div>`;
 }
 

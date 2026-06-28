@@ -265,23 +265,27 @@ https://diretriztecnologia.com.br
 
 ## 9. Segurança
 
-### Headers HTTP (configurados no Cloudflare Pages)
+### Headers HTTP (arquivo `public/_headers`, aplicado pelo Cloudflare Pages)
 ```
-Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' static.cloudflareinsights.com cdn.emailjs.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' api.emailjs.com static.cloudflareinsights.com; frame-ancestors 'none'
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://static.cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
 Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
+> A CSP é same-origin: o browser só faz `fetch` para `/api/chat` e `/api/contact`.
+> Resend roda server-side e o Workers AI é binding — não há domínio de API externo no client.
+> EmailJS foi **removido** do stack (não aparece mais na CSP).
 
 ### Form e dados
-- EmailJS chave **public** (segura por design — escopo limitado a templates)
-- Rate limit no template do EmailJS (lado servidor deles)
-- Honeypot field para bots
-- Validação client-side + sanitização no template do EmailJS
-- LGPD: política de privacidade explicando uso dos dados do form
-- Sem armazenamento próprio de leads na v1 (chegam só por e-mail)
+- Envio via **Resend** server-side na Pages Function `/api/contact` (`functions/_shared/email.ts`); `RESEND_API_KEY` é secret no Cloudflare, nunca exposto ao client.
+- Validação de Origin nos POST de `/api/*` (`functions/_middleware.ts`) + rate-limit por IP e teto diário de e-mails (`functions/_shared/email-budget.ts`).
+- Honeypot (campo `website`) + validação de tamanho (name ≤ 120, company ≤ 160, phone ≤ 40, message ≤ 4000, e-mail ≤ 254) em `functions/api/contact.ts`.
+- Sanitização: `escapeHtml` em todos os campos e na transcrição do template (`functions/_shared/email.ts`); transcrição marcada como conteúdo não confiável do visitante.
+- Detalhe de erro do Resend fica só no log do servidor (não vaza ao cliente).
+- LGPD: **pendente** publicar política de privacidade e aviso de consentimento no envio (ver `docs/security-review.md`).
+- Sem armazenamento próprio de leads na v1 (chegam só por e-mail).
 
 ### Dependências
 - `npm audit` no CI
