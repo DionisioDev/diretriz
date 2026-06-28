@@ -182,7 +182,7 @@ const content: Record<Locale, SiteContent> = {
       cta: 'Falar com a Diretriz',
     },
     hero: {
-      kicker: '',
+      kicker: '/ Diretriz Tecnologia',
       tagline: ['tecnologia', 'na direção', 'do seu negócio.'],
       sub: '',
       ctaPrimary: 'Falar com a Diretriz',
@@ -398,7 +398,7 @@ const content: Record<Locale, SiteContent> = {
       cta: 'Talk to Diretriz',
     },
     hero: {
-      kicker: '',
+      kicker: '/ Diretriz Tecnologia',
       tagline: ['technology', 'in the direction', 'of your business.'],
       sub: '',
       ctaPrimary: 'Talk to Diretriz',
