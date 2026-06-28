@@ -65,7 +65,7 @@ export default function HeroIntro({
       </div>
 
       <div className={styles.copy}>
-        {kicker && <div className={`${styles.kicker} fade-in${landed ? ' is-in' : ''}`}>{kicker}</div>}
+        <div className={`${styles.kicker} fade-in${landed ? ' is-in' : ''}`}>{kicker}</div>
 
         <h1 className={styles.display} aria-hidden="true">
           <span className={styles.line}>
