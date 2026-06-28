@@ -114,6 +114,7 @@ export default function ChatWidget({ strings, locale }: Props) {
         body: JSON.stringify({
           messages: convo.map((m) => ({ role: m.role, content: m.content })),
           locale,
+          leadSent, // já deixou contato → o assistente não repete convite/confirmação
         }),
       });
       if (!res.ok || !res.body) throw new Error('bad status');

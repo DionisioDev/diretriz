@@ -11,11 +11,14 @@
 #   (migrar para nonce/hash fica como melhoria futura.)
 # - static.cloudflareinsights.com: beacon do Web Analytics (se ativado no painel);
 #   remova de script-src/connect-src se nunca usar Web Analytics.
+# - fonts.googleapis.com (style-src) + fonts.gstatic.com (font-src): Material Symbols
+#   (ícone do menu/close) é carregado do Google Fonts em Base.astro — sem isso a CSP
+#   bloqueia e o ícone vira o texto "menu". Se um dia auto-hospedar a fonte, pode remover.
 # - frame-ancestors 'none' cobre o anti-clickjacking (substitui X-Frame-Options nos
 #   navegadores modernos).
 
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://static.cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://static.cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY

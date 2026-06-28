@@ -31,6 +31,8 @@ interface Env extends RateEnv {
 interface ChatBody {
   messages?: ChatMessage[];
   locale?: Locale;
+  /** A pessoa já deixou o contato pelo formulário (suprime convites/repetições). */
+  leadSent?: boolean;
 }
 
 const MAX_MESSAGES = 24;
@@ -153,6 +155,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return oneShotSse(MSG.noAi[locale]);
   }
 
+  // A pessoa já deixou o contato? Ajusta o prompt para não repetir convite/confirmação.
+  const systemPrompt = replySystemPrompt(locale, { leadSent: body.leadSent === true });
+
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
@@ -163,7 +168,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       let replyText = '';
       try {
         const aiStream = (await ai.run(REPLY_MODEL, {
-          messages: [{ role: 'system', content: replySystemPrompt(locale) }, ...history],
+          messages: [{ role: 'system', content: systemPrompt }, ...history],
           stream: true,
           max_tokens: 160,
           temperature: 0.4,
@@ -202,7 +207,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       // gravação mesmo que o cliente desconecte antes de o stream terminar (anti-TOCTOU
       // parcial: o débito por conexões abortadas não se perde).
       if (replyText) {
-        const replyIn = replySystemPrompt(locale).length + history.reduce((s, m) => s + m.content.length, 0);
+        const replyIn = systemPrompt.length + history.reduce((s, m) => s + m.content.length, 0);
         context.waitUntil(addNeurons(context.env, estimateNeurons(REPLY_MODEL, replyIn, replyText.length)));
       }
 
