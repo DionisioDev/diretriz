@@ -56,7 +56,9 @@
   background: var(--color-primary);
   transform-origin: left;
   transform: scaleX(0);
-  transition: transform 0.25s var(--ease-soft);
+  /* Curta: a contagem é atualizada por rAF a cada frame, então uma transição longa
+     só faria a barra arrastar atrás do número. 0.12s suaviza eventuais saltos. */
+  transition: transform 0.12s linear;
 }
 
 .count {
