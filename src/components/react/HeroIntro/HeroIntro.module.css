@@ -102,6 +102,9 @@
   }
   .kicker {
     order: 1;
+    /* No mobile o kicker "/ Diretriz Tecnologia" é ocultado (decisão de layout):
+       a marca já aparece no header; aqui ele só competiria com o título. */
+    display: none;
   }
   .display {
     order: 2;
